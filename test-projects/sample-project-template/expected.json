@@ -1,0 +1,15 @@
+{
+  "files": [
+    "src/add-page.ts",
+    "src/app.ts",
+    "src/math.ts",
+    "src/subtract-page.ts"
+  ],
+  "imports": [
+    ["src/add-page.ts", "src/math.ts"],
+    ["src/app.ts", "src/add-page.ts"],
+    ["src/app.ts", "src/subtract-page.ts"],
+    ["src/subtract-page.ts", "src/math.ts"]
+  ],
+  "changedFiles": ["src/math.ts"]
+}

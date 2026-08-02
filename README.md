@@ -20,8 +20,10 @@ symbols, and traces their direct and potential downstream impact.
 
 ## Current preview
 
-The `0.0.1` package provides the `code-atlas` command and project help. The
-analyzer and interactive graph are not included yet.
+The repository now includes the local application foundation: a CLI, Fastify
+server, React client, repeatable Git-backed sample project, and automated
+verification. The analyzer and interactive graph are intentionally not
+included yet.
 
 ```sh
 npx @dububu/code-atlas --help
@@ -33,6 +35,44 @@ For repeat use, install the package globally and use the shorter executable:
 npm install --global @dububu/code-atlas
 code-atlas .
 ```
+
+## Development
+
+Use Node.js 24 and install the dependencies:
+
+```sh
+npm install
+```
+
+Create a disposable sample repository. The script commits a clean baseline,
+then modifies one source file so future change-analysis work has a predictable
+target:
+
+```sh
+npm run playground
+```
+
+Start the local server and Vite client:
+
+```sh
+npm run dev
+```
+
+The browser opens at `http://127.0.0.1:5173`. To point the development app at
+another local project:
+
+```sh
+npm run dev -- /absolute/path/to/project
+```
+
+Run the same checks used in CI:
+
+```sh
+npm run verify
+```
+
+The generated `.playground/` directory is disposable and ignored by Git. The
+fixture template in `test-projects/` is versioned.
 
 ## Privacy
 
