@@ -11,7 +11,7 @@ Visualize how exported-symbol changes affect a JavaScript or TypeScript project.
 Run Code Atlas from the root of a Git repository:
 
 ```sh
-npx code-atlas .
+npx @dububu/code-atlas .
 ```
 
 Code Atlas will launch a local web application that shows the complete
@@ -24,7 +24,14 @@ The `0.0.1` package provides the `code-atlas` command and project help. The
 analyzer and interactive graph are not included yet.
 
 ```sh
-npx code-atlas --help
+npx @dububu/code-atlas --help
+```
+
+For repeat use, install the package globally and use the shorter executable:
+
+```sh
+npm install --global @dububu/code-atlas
+code-atlas .
 ```
 
 ## Privacy
