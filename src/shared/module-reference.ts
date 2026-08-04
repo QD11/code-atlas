@@ -10,6 +10,7 @@ export interface ImportBinding {
 export interface ImportReference {
   kind: "import";
   specifier: string;
+  certainty: "confirmed";
   bindings: ImportBinding[];
 }
 
@@ -25,10 +26,37 @@ export interface ReExportBinding {
 export interface ReExportReference {
   kind: "re-export";
   specifier: string;
+  certainty: "confirmed";
   bindings: ReExportBinding[];
 }
 
-export type ModuleReference = ImportReference | ReExportReference;
+export interface DynamicImportReference {
+  kind: "dynamic-import";
+  specifier: string;
+  certainty: "confirmed";
+  bindings: [];
+}
+
+export interface RequireReference {
+  kind: "require";
+  specifier: string;
+  certainty: "inferred";
+  bindings: [];
+}
+
+export interface ImportEqualsReference {
+  kind: "import-equals";
+  specifier: string;
+  certainty: "confirmed";
+  bindings: ImportBinding[];
+}
+
+export type ModuleReference =
+  | ImportReference
+  | ReExportReference
+  | DynamicImportReference
+  | RequireReference
+  | ImportEqualsReference;
 
 export type ModuleParseDiagnosticSeverity = "error" | "warning" | "advice";
 
