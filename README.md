@@ -20,10 +20,11 @@ symbols, and traces their direct and potential downstream impact.
 
 ## Current preview
 
-The repository now includes the local application foundation: a CLI, Fastify
-server, React client, repeatable Git-backed sample project, and automated
-verification. The analyzer and interactive graph are intentionally not
-included yet.
+The local analysis backend is implemented. It discovers the full supported
+project, resolves internal imports, compares the working tree with Git
+`HEAD`, detects changed exported symbols, and calculates exact direct and
+inferred transitive impact. The interactive graph UI is still under
+development.
 
 ```sh
 npx @dububu/code-atlas --help
@@ -65,6 +66,12 @@ another local project:
 npm run dev -- /absolute/path/to/project
 ```
 
+The installed CLI serves the current analysis from `GET /api/snapshot` and
+publishes revision-only live update notifications from `GET /api/events`.
+These routes are an internal bridge to the browser UI: the server binds to
+`127.0.0.1`, rejects non-loopback hosts and origins, accepts no filesystem
+path from a request, and has no endpoint for raw source contents.
+
 Run the same checks used in CI:
 
 ```sh
@@ -77,7 +84,9 @@ fixture template in `test-projects/` is versioned.
 ## Privacy
 
 Code Atlas is designed to analyze repositories locally. Source code will not
-be uploaded or sent to a hosted service.
+be uploaded or sent to a hosted service. Analysis snapshots contain project
+paths, import/export metadata, change classifications, structural hashes, and
+diagnostics—but not raw source text.
 
 ## License
 
