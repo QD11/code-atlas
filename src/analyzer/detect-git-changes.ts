@@ -1,17 +1,14 @@
-import { spawn } from "node:child_process";
 import path from "node:path";
+import {
+  runGit,
+  type GitCommandResult,
+} from "~/analyzer/git/run-git.js";
 import { SUPPORTED_SOURCE_EXTENSIONS } from "~/shared/file-node.js";
 import type {
   DetectGitChangesResult,
   GitChangeDiagnostic,
   SourceFileChange,
 } from "~/shared/file-change.js";
-
-interface GitCommandResult {
-  exitCode: number;
-  stdout: Buffer;
-  stderr: string;
-}
 
 const supportedSourceExtensions = new Set<string>(
   SUPPORTED_SOURCE_EXTENSIONS,
@@ -531,36 +528,6 @@ function gitFailureMessage(result: GitCommandResult): string {
   return detail
     ? `Git change detection failed: ${detail}`
     : `Git change detection failed with exit code ${result.exitCode}`;
-}
-
-function runGit(
-  arguments_: readonly string[],
-  cwd: string,
-): Promise<GitCommandResult> {
-  return new Promise((resolve, reject) => {
-    const child = spawn("git", arguments_, {
-      cwd,
-      stdio: ["ignore", "pipe", "pipe"],
-      windowsHide: true,
-    });
-    const stdoutChunks: Buffer[] = [];
-    const stderrChunks: Buffer[] = [];
-
-    child.stdout.on("data", (chunk: Buffer) => {
-      stdoutChunks.push(chunk);
-    });
-    child.stderr.on("data", (chunk: Buffer) => {
-      stderrChunks.push(chunk);
-    });
-    child.once("error", reject);
-    child.once("close", (exitCode) => {
-      resolve({
-        exitCode: exitCode ?? 1,
-        stdout: Buffer.concat(stdoutChunks),
-        stderr: Buffer.concat(stderrChunks).toString("utf8"),
-      });
-    });
-  });
 }
 
 function errorMessage(error: unknown): string {
