@@ -1,4 +1,5 @@
 export type ImportBindingKind = "default" | "named" | "namespace";
+export type ModuleReferenceCertainty = "confirmed" | "inferred";
 
 export interface ImportBinding {
   kind: ImportBindingKind;
