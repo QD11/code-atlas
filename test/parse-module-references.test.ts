@@ -21,6 +21,7 @@ describe("parseModuleReferences", () => {
         {
           kind: "import",
           specifier: "./dependency.js",
+          certainty: "confirmed",
           bindings: [
             {
               kind: "default",
@@ -51,6 +52,7 @@ describe("parseModuleReferences", () => {
         {
           kind: "import",
           specifier: "./models.js",
+          certainty: "confirmed",
           bindings: [
             {
               kind: "namespace",
@@ -63,6 +65,7 @@ describe("parseModuleReferences", () => {
         {
           kind: "import",
           specifier: "./setup.js",
+          certainty: "confirmed",
           bindings: [],
         },
       ],
@@ -95,6 +98,7 @@ describe("parseModuleReferences", () => {
         {
           kind: "re-export",
           specifier: "./dependency.js",
+          certainty: "confirmed",
           bindings: [
             {
               kind: "named",
@@ -119,6 +123,7 @@ describe("parseModuleReferences", () => {
         {
           kind: "re-export",
           specifier: "./everything.js",
+          certainty: "confirmed",
           bindings: [
             {
               kind: "star",
@@ -131,6 +136,7 @@ describe("parseModuleReferences", () => {
         {
           kind: "re-export",
           specifier: "./types.js",
+          certainty: "confirmed",
           bindings: [
             {
               kind: "star",
@@ -143,6 +149,7 @@ describe("parseModuleReferences", () => {
         {
           kind: "re-export",
           specifier: "./utilities.js",
+          certainty: "confirmed",
           bindings: [
             {
               kind: "namespace",
@@ -155,6 +162,7 @@ describe("parseModuleReferences", () => {
         {
           kind: "re-export",
           specifier: "./models.js",
+          certainty: "confirmed",
           bindings: [
             {
               kind: "namespace",
@@ -198,6 +206,7 @@ describe("parseModuleReferences", () => {
     expect(result.references).toContainEqual({
       kind: "import",
       specifier: "./valid.js",
+      certainty: "confirmed",
       bindings: [
         {
           kind: "named",
@@ -211,12 +220,91 @@ describe("parseModuleReferences", () => {
     expect(result.diagnostics[0]?.severity).toBe("error");
   });
 
-  it("leaves CommonJS and dynamic imports for their own parser task", () => {
+  it("extracts literal dynamic, CommonJS, and import-equals references", () => {
     const result = parseModuleReferences(
       "example.ts",
       `
         const commonJs = require("./common-js.js");
+        const template = require(\`./template.cjs\`);
         const lazy = import("./lazy.js");
+        const templateLazy = import(\`./template-lazy.js\`);
+        import legacy = require("./legacy.js");
+      `,
+    );
+
+    expect(result).toEqual({
+      references: [
+        {
+          kind: "require",
+          specifier: "./common-js.js",
+          certainty: "inferred",
+          bindings: [],
+        },
+        {
+          kind: "require",
+          specifier: "./template.cjs",
+          certainty: "inferred",
+          bindings: [],
+        },
+        {
+          kind: "dynamic-import",
+          specifier: "./lazy.js",
+          certainty: "confirmed",
+          bindings: [],
+        },
+        {
+          kind: "dynamic-import",
+          specifier: "./template-lazy.js",
+          certainty: "confirmed",
+          bindings: [],
+        },
+        {
+          kind: "import-equals",
+          specifier: "./legacy.js",
+          certainty: "confirmed",
+          bindings: [
+            {
+              kind: "namespace",
+              importedName: "*",
+              localName: "legacy",
+              isTypeOnly: false,
+            },
+          ],
+        },
+      ],
+      diagnostics: [],
+    });
+  });
+
+  it("reports nonliteral runtime references without guessing a target", () => {
+    const result = parseModuleReferences(
+      "example.ts",
+      `
+        const required = require(moduleName);
+        const lazy = import(\`./pages/\${page}.js\`);
+      `,
+    );
+
+    expect(result.references).toEqual([]);
+    expect(result.diagnostics).toEqual([
+      {
+        severity: "warning",
+        message: "Require specifier cannot be determined statically",
+      },
+      {
+        severity: "warning",
+        message: "Dynamic import specifier cannot be determined statically",
+      },
+    ]);
+  });
+
+  it("does not mistake comments, strings, or require.resolve for imports", () => {
+    const result = parseModuleReferences(
+      "example.ts",
+      `
+        // require("./comment.js");
+        const text = "import('./string.js')";
+        const location = require.resolve("./location.js");
       `,
     );
 
