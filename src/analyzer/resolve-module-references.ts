@@ -40,6 +40,15 @@ export function createModuleResolver({
       ts.sys.useCaseSensitiveFileNames ? fileName : fileName.toLowerCase(),
     compilerOptions,
   );
+  const moduleResolutionHost: ts.ModuleResolutionHost = {
+    ...ts.sys,
+    fileExists(fileName) {
+      return (
+        projectFileByAbsolutePath.has(normalizeAbsolutePath(fileName)) ||
+        ts.sys.fileExists(fileName)
+      );
+    },
+  };
 
   return {
     resolve(sourceFile, references) {
@@ -96,10 +105,11 @@ export function createModuleResolver({
     }
 
     const typescriptResolution = resolveWithTypeScript(
-      reference.specifier,
-      absoluteSourceFile,
-      compilerOptions,
-      moduleResolutionCache,
+          reference.specifier,
+          absoluteSourceFile,
+          compilerOptions,
+          moduleResolutionCache,
+          moduleResolutionHost,
     );
     const resolvedFileName = typescriptResolution?.resolvedFileName;
 
@@ -168,12 +178,13 @@ function resolveWithTypeScript(
   containingFile: string,
   compilerOptions: ts.CompilerOptions,
   cache: ts.ModuleResolutionCache,
+  host: ts.ModuleResolutionHost,
 ): ts.ResolvedModuleFull | undefined {
   return ts.resolveModuleName(
     specifier,
     containingFile,
     compilerOptions,
-    ts.sys,
+    host,
     cache,
   ).resolvedModule;
 }

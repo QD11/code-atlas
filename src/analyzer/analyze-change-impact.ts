@@ -137,6 +137,7 @@ function directMatches(
       if (!referenceCarriesExport(reference, origin.name)) continue;
 
       const certainty =
+        edge.certainty === "confirmed" &&
         reference.certainty === "confirmed" &&
         origin.certainty === "confirmed"
           ? "confirmed"
