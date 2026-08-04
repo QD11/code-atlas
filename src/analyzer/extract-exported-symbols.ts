@@ -236,6 +236,11 @@ function localExportSymbol(
   const isTypeOnly =
     explicitlyTypeOnly ||
     (records.length > 0 && records.every((record) => record.isTypeOnly));
+  const namespaceRecords = records.filter(
+    (record) => record.isTypeOnly === isTypeOnly,
+  );
+  const fingerprintRecords =
+    namespaceRecords.length > 0 ? namespaceRecords : records;
 
   return {
     name: exportedName,
@@ -249,7 +254,7 @@ function localExportSymbol(
       exportedName,
       localName,
       isTypeOnly,
-      declarations: records.map((record) => record.structure),
+      declarations: fingerprintRecords.map((record) => record.structure),
     }),
   };
 }
