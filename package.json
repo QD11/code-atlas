@@ -14,7 +14,7 @@
     "LICENSE"
   ],
   "engines": {
-    "node": ">=22"
+    "node": ">=22.12"
   },
   "scripts": {
     "playground": "node scripts/create-playground.mjs",
@@ -33,6 +33,7 @@
     "@fastify/static": "^10.1.2",
     "fastify": "^5.6.0",
     "open": "^10.2.0",
+    "oxc-parser": "^0.143.0",
     "typescript": "^6.0.0"
   },
   "devDependencies": {
