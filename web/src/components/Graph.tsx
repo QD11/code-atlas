@@ -48,6 +48,8 @@ const GRAPH_CONFIG: CosmosGraphConfig = {
   linkDefaultArrows: true,
   linkOpacity: 0.55,
   pointDefaultSize: 7,
+  pointGreyoutOpacity: 0.35,
+  pointSizeScale: 1.5,
   randomSeed: "code-atlas",
   renderHoveredPointRing: true,
   simulationCollision: 0.7,
@@ -142,9 +144,10 @@ export function Graph({
   useEffect(() => {
     graphRef.current?.setConfigPartial({
       backgroundColor: theme.colors.canvas,
-      focusedPointRingColor: theme.colors.accent,
+      focusedPointRingColor: theme.colors.text,
       hoveredPointRingColor: theme.colors.text,
       linkDefaultColor: theme.colors.textMuted,
+      outlinedPointRingColor: theme.colors.accentText,
       pointDefaultColor: theme.colors.accent,
     });
   }, [rendererAvailable, theme]);
@@ -217,6 +220,8 @@ function applySelection(
 
   graph.setConfigPartial({
     focusedPointIndex: selectedIndex,
+    highlightedPointIndices:
+      selectedIndex === undefined ? undefined : [selectedIndex],
     outlinedPointIndices:
       selectedIndex === undefined ? undefined : [selectedIndex],
   });

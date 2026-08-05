@@ -45,15 +45,8 @@ Use Node.js 24 and install the dependencies:
 npm install
 ```
 
-Create a disposable sample repository. The script commits a clean baseline,
-then modifies one source file so future change-analysis work has a predictable
-target:
-
-```sh
-npm run playground
-```
-
-Start the local server and Vite client:
+Start the local server and Vite client. By default, Code Atlas analyzes its own
+`web` directory so frontend changes appear in the graph as you build:
 
 ```sh
 npm run dev
@@ -64,6 +57,14 @@ another local project:
 
 ```sh
 npm run dev -- /absolute/path/to/project
+```
+
+To test against the disposable sample repository instead, create it and pass
+its path explicitly:
+
+```sh
+npm run playground
+npm run dev -- .playground/sample-project
 ```
 
 The installed CLI serves the current analysis from `GET /api/snapshot` and

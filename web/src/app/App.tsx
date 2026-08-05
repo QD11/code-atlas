@@ -1,3 +1,4 @@
+import { useState } from "react";
 import styled from "styled-components";
 import { useColorMode } from "~/app/AppThemeProvider";
 import { LeftPanel } from "~/app/LeftPanel";
@@ -10,8 +11,11 @@ import { Button } from "~/components/ui";
 export function App() {
   const { mode, toggleMode } = useColorMode();
   const { connection, data, message } = useProjectSnapshot();
+  const [selectedFileId, setSelectedFileId] = useState<string>();
+  const [isRightPanelOpen, setIsRightPanelOpen] = useState(true);
   const nodes = data?.snapshot.graph.nodes ?? [];
   const edges = data?.snapshot.graph.edges ?? [];
+  const selectedFile = nodes.find(({ id }) => id === selectedFileId);
   const projectLabel = data
     ? projectName(data.snapshot.projectRoot)
     : "Waiting for project";
@@ -49,8 +53,19 @@ export function App() {
           edges={edges}
           message={message}
           nodes={nodes}
+          onFileSelect={(fileId) => {
+            setSelectedFileId(fileId);
+            if (fileId) setIsRightPanelOpen(true);
+          }}
+          selectedFileId={selectedFile?.id}
         />
-        <RightPanel />
+        <RightPanel
+          edges={edges}
+          isOpen={isRightPanelOpen}
+          nodes={nodes}
+          onOpenChange={setIsRightPanelOpen}
+          selectedFile={selectedFile}
+        />
       </Workspace>
     </Shell>
   );
