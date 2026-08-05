@@ -1,10 +1,5 @@
 import { execFile } from "node:child_process";
-import {
-  mkdir,
-  mkdtemp,
-  rm,
-  writeFile,
-} from "node:fs/promises";
+import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -19,9 +14,9 @@ const temporaryDirectories: string[] = [];
 
 afterEach(async () => {
   await Promise.all(
-    temporaryDirectories.splice(0).map((directory) =>
-      rm(directory, { recursive: true, force: true }),
-    ),
+    temporaryDirectories
+      .splice(0)
+      .map((directory) => rm(directory, { recursive: true, force: true })),
   );
 });
 
@@ -44,9 +39,9 @@ describe("project snapshot service", () => {
 
     expect(state.revision).toBe(2);
     expect(state.snapshot.hasExportChanges).toBe(true);
-    expect(
-      state.snapshot.changedFiles[0]?.exportedSymbolChanges,
-    ).toMatchObject([{ name: "value", status: "modified" }]);
+    expect(state.snapshot.changedFiles[0]?.exportedSymbolChanges).toMatchObject(
+      [{ name: "value", status: "modified" }],
+    );
     expect(events).toMatchObject([
       { type: "snapshot", state: { revision: 2 } },
     ]);
@@ -96,8 +91,7 @@ describe("project snapshot service", () => {
 
     try {
       await writeProjectFiles(projectRoot, {
-        "node_modules/example/index.ts":
-          "export const dependency = 2;\n",
+        "node_modules/example/index.ts": "export const dependency = 2;\n",
       });
       await new Promise((resolve) => setTimeout(resolve, 100));
 
@@ -164,10 +158,7 @@ function waitForSnapshot(
       reject(new Error("Timed out waiting for a snapshot update"));
     }, 5_000);
     const unsubscribe = service.subscribe((event) => {
-      if (
-        event.type !== "snapshot" ||
-        event.state.revision < minimumRevision
-      ) {
+      if (event.type !== "snapshot" || event.state.revision < minimumRevision) {
         return;
       }
 
@@ -209,12 +200,7 @@ async function createTemporaryRepository(
   await writeProjectFiles(projectRoot, files);
   await git(projectRoot, "init", "-b", "main");
   await git(projectRoot, "config", "user.name", "Code Atlas Tests");
-  await git(
-    projectRoot,
-    "config",
-    "user.email",
-    "tests@code-atlas.local",
-  );
+  await git(projectRoot, "config", "user.email", "tests@code-atlas.local");
   await git(projectRoot, "add", ".");
   await git(projectRoot, "commit", "-m", "Baseline");
   return projectRoot;
@@ -231,7 +217,10 @@ async function writeProjectFiles(
   }
 }
 
-async function git(projectRoot: string, ...arguments_: string[]): Promise<void> {
+async function git(
+  projectRoot: string,
+  ...arguments_: string[]
+): Promise<void> {
   await execFileAsync("git", arguments_, {
     cwd: projectRoot,
     encoding: "utf8",

@@ -1,4 +1,7 @@
-import type { ExportedSymbol, ExportedSymbolKind } from "~/shared/exported-symbol.js";
+import type {
+  ExportedSymbol,
+  ExportedSymbolKind,
+} from "~/shared/exported-symbol.js";
 
 export interface LocalDeclarationRecord {
   name: string;

@@ -169,9 +169,7 @@ function declarationRecord(
   };
 }
 
-function bindingNames(
-  pattern: BindingPattern | BindingRestElement,
-): string[] {
+function bindingNames(pattern: BindingPattern | BindingRestElement): string[] {
   switch (pattern.type) {
     case "Identifier":
       return [pattern.name];
@@ -214,8 +212,7 @@ function addImportBindings(
             specifier.imported.type === "Identifier"
               ? specifier.imported.name
               : specifier.imported.value,
-          isTypeOnly:
-            baseBinding.isTypeOnly || specifier.importKind === "type",
+          isTypeOnly: baseBinding.isTypeOnly || specifier.importKind === "type",
         });
         break;
       case "ImportDefaultSpecifier":

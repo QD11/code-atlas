@@ -18,9 +18,9 @@ const temporaryDirectories: string[] = [];
 
 afterEach(async () => {
   await Promise.all(
-    temporaryDirectories.splice(0).map((directory) =>
-      rm(directory, { recursive: true, force: true }),
-    ),
+    temporaryDirectories
+      .splice(0)
+      .map((directory) => rm(directory, { recursive: true, force: true })),
   );
 });
 
@@ -285,15 +285,15 @@ async function writeProjectFiles(
   }
 }
 
-async function commitAll(
-  projectRoot: string,
-  message: string,
-): Promise<void> {
+async function commitAll(projectRoot: string, message: string): Promise<void> {
   await git(projectRoot, "add", ".");
   await git(projectRoot, "commit", "-m", message);
 }
 
-async function git(projectRoot: string, ...arguments_: string[]): Promise<void> {
+async function git(
+  projectRoot: string,
+  ...arguments_: string[]
+): Promise<void> {
   await execFileAsync("git", arguments_, {
     cwd: projectRoot,
     encoding: "utf8",

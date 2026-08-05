@@ -578,8 +578,7 @@ describe("extractExportedSymbols", () => {
     ]);
     expect(result.diagnostics).toContainEqual({
       severity: "warning",
-      message:
-        'Could not find local declaration for exported symbol "missing"',
+      message: 'Could not find local declaration for exported symbol "missing"',
     });
   });
 });

@@ -6,11 +6,7 @@ import {
   type ReactNode,
 } from "react";
 import { ThemeProvider } from "styled-components";
-import {
-  themes,
-  tokens,
-  type ColorMode,
-} from "~/app/theme";
+import { themes, tokens, type ColorMode } from "~/app/theme";
 
 interface ColorModeControl {
   mode: ColorMode;
@@ -21,17 +17,14 @@ interface AppThemeProviderProps {
   children: ReactNode;
 }
 
-const ColorModeContext = createContext<ColorModeControl | undefined>(
-  undefined,
-);
+const ColorModeContext = createContext<ColorModeControl | undefined>(undefined);
 
 export function AppThemeProvider({ children }: AppThemeProviderProps) {
   const [mode, setMode] = useState<ColorMode>(systemColorMode);
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-color-scheme: dark)");
-    const updateMode = () =>
-      setMode(media.matches ? "dark" : "light");
+    const updateMode = () => setMode(media.matches ? "dark" : "light");
 
     media.addEventListener("change", updateMode);
     return () => media.removeEventListener("change", updateMode);
@@ -53,9 +46,7 @@ export function AppThemeProvider({ children }: AppThemeProviderProps) {
 export function useColorMode(): ColorModeControl {
   const control = useContext(ColorModeContext);
   if (!control) {
-    throw new Error(
-      "useColorMode must be used within AppThemeProvider",
-    );
+    throw new Error("useColorMode must be used within AppThemeProvider");
   }
   return control;
 }

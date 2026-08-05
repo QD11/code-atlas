@@ -335,9 +335,7 @@ function exportAllSymbol(declaration: ExportAllDeclaration): ExportedSymbol {
 
   return {
     name: exportedName,
-    kind: declaration.exported
-      ? "namespace-re-export"
-      : "star-re-export",
+    kind: declaration.exported ? "namespace-re-export" : "star-re-export",
     origin: "re-export",
     importedName: "*",
     source: declaration.source.value,
@@ -410,9 +408,7 @@ function moduleExportName(name: ModuleExportName): string {
   return name.type === "Identifier" ? name.name : name.value;
 }
 
-function exportedSymbolDiagnostic(
-  error: OxcError,
-): ExportedSymbolDiagnostic {
+function exportedSymbolDiagnostic(error: OxcError): ExportedSymbolDiagnostic {
   return {
     severity:
       error.severity === "Error"

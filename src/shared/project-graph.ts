@@ -7,10 +7,7 @@ import type {
 import type { ModuleReferenceResolution } from "./module-reference-resolution.js";
 
 export type ProjectAnalysisPhase =
-  | "configuration"
-  | "read"
-  | "parse"
-  | "resolution";
+  "configuration" | "read" | "parse" | "resolution";
 
 export interface ProjectAnalysisDiagnostic {
   phase: ProjectAnalysisPhase;

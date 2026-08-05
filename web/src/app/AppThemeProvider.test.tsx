@@ -1,10 +1,7 @@
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import {
-  AppThemeProvider,
-  useColorMode,
-} from "./AppThemeProvider";
+import { AppThemeProvider, useColorMode } from "./AppThemeProvider";
 
 describe("AppThemeProvider", () => {
   afterEach(() => {
@@ -33,11 +30,7 @@ function renderMode(): string {
   );
 }
 
-function stubWindow({
-  systemDark,
-}: {
-  systemDark: boolean;
-}): void {
+function stubWindow({ systemDark }: { systemDark: boolean }): void {
   vi.stubGlobal("window", {
     matchMedia: () => ({
       addEventListener: vi.fn(),

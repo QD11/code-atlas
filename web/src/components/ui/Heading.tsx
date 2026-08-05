@@ -1,8 +1,4 @@
-import {
-  forwardRef,
-  useContext,
-  type ComponentPropsWithoutRef,
-} from "react";
+import { forwardRef, useContext, type ComponentPropsWithoutRef } from "react";
 import styled from "styled-components";
 import {
   headingLevelForDepth,

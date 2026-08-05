@@ -87,9 +87,7 @@ async function loadHeadVersion(
   if (fileChange.status === "added") return emptyVersion();
 
   const sourceFile =
-    fileChange.status === "renamed"
-      ? fileChange.previousPath
-      : fileChange.path;
+    fileChange.status === "renamed" ? fileChange.previousPath : fileChange.path;
   const repositoryPath = repositoryRelativePath(
     repositoryRoot,
     projectRoot,
@@ -106,8 +104,7 @@ async function loadHeadVersion(
       return failedRead(
         "head",
         sourceFile,
-        result.stderr.trim() ||
-          `Git exited with code ${result.exitCode}`,
+        result.stderr.trim() || `Git exited with code ${result.exitCode}`,
       );
     }
 

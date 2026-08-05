@@ -11,23 +11,14 @@ import type {
   ModuleReference,
   ReExportBinding,
 } from "~/shared/module-reference.js";
-import type {
-  ProjectGraph,
-  ProjectGraphEdge,
-} from "~/shared/project-graph.js";
+import type { ProjectGraph, ProjectGraphEdge } from "~/shared/project-graph.js";
 
 describe("analyzeChangeImpact", () => {
   it("highlights only importers of the exact changed export", () => {
     const graph = projectGraph([
-      importEdge("add-page", "math", [
-        namedImport("add"),
-      ]),
-      importEdge("subtract-page", "math", [
-        namedImport("subtract"),
-      ]),
-      importEdge("namespace-page", "math", [
-        namespaceImport(),
-      ]),
+      importEdge("add-page", "math", [namedImport("add")]),
+      importEdge("subtract-page", "math", [namedImport("subtract")]),
+      importEdge("namespace-page", "math", [namespaceImport()]),
       edge("side-effect", "math", {
         kind: "import",
         specifier: "./math.js",
@@ -76,9 +67,7 @@ describe("analyzeChangeImpact", () => {
       { fileId: "root", levels: ["transitive-impact"] },
     ]);
     expect(
-      result.files
-        .find(({ fileId }) => fileId === "root")
-        ?.reasons[0],
+      result.files.find(({ fileId }) => fileId === "root")?.reasons[0],
     ).toMatchObject({
       level: "transitive-impact",
       viaFile: "downstream",
@@ -195,13 +184,13 @@ describe("analyzeChangeImpact", () => {
       previousPath: "old-name",
     };
 
-    const result = analyzeChangeImpact(
-      graph,
-      exportResult([renamed]),
-      { includeTransitive: false },
-    );
+    const result = analyzeChangeImpact(graph, exportResult([renamed]), {
+      includeTransitive: false,
+    });
 
-    expect(result.files.map(({ fileId, levels }) => ({ fileId, levels }))).toEqual([
+    expect(
+      result.files.map(({ fileId, levels }) => ({ fileId, levels })),
+    ).toEqual([
       { fileId: "consumer", levels: ["direct-impact"] },
       { fileId: "new-name", levels: ["direct-change"] },
     ]);
@@ -316,9 +305,7 @@ function projectGraph(edges: ProjectGraphEdge[]): ProjectGraph {
       name: fileId,
       extension: ".ts",
     })),
-    edges: edges.toSorted((left, right) =>
-      left.id.localeCompare(right.id),
-    ),
+    edges: edges.toSorted((left, right) => left.id.localeCompare(right.id)),
   };
 }
 
