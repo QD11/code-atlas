@@ -1,5 +1,6 @@
 node_modules/
 dist/
 .playground/
+/AGENTS.md
 *.tgz
 .DS_Store
