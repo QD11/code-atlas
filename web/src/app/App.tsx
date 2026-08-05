@@ -147,9 +147,9 @@ const ChangeStatus = styled.span<{ $hasChanges?: boolean }>`
 const Workspace = styled.div`
   min-height: 0;
   display: grid;
-  grid-template-columns: 260px minmax(0, 1fr) 300px;
+  grid-template-columns: 260px minmax(0, 1fr) auto;
 
   @media (max-width: 1100px) {
-    grid-template-columns: 220px minmax(0, 1fr) 260px;
+    grid-template-columns: 220px minmax(0, 1fr) auto;
   }
 `;
