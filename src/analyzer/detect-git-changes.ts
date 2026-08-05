@@ -1,8 +1,5 @@
 import path from "node:path";
-import {
-  runGit,
-  type GitCommandResult,
-} from "~/analyzer/git/run-git.js";
+import { runGit, type GitCommandResult } from "~/analyzer/git/run-git.js";
 import { SUPPORTED_SOURCE_EXTENSIONS } from "~/shared/file-node.js";
 import type {
   DetectGitChangesResult,
@@ -10,9 +7,7 @@ import type {
   SourceFileChange,
 } from "~/shared/file-change.js";
 
-const supportedSourceExtensions = new Set<string>(
-  SUPPORTED_SOURCE_EXTENSIONS,
-);
+const supportedSourceExtensions = new Set<string>(SUPPORTED_SOURCE_EXTENSIONS);
 
 export async function detectGitChanges(
   projectRoot: string,
@@ -97,15 +92,7 @@ export async function detectGitChanges(
       absoluteProjectRoot,
     ),
     runGit(
-      [
-        "diff",
-        "--name-only",
-        "--diff-filter=U",
-        "--relative",
-        "-z",
-        "--",
-        ".",
-      ],
+      ["diff", "--name-only", "--diff-filter=U", "--relative", "-z", "--", "."],
       absoluteProjectRoot,
     ),
   ]);
@@ -121,10 +108,7 @@ export async function detectGitChanges(
   if (commandFailure) return commandFailure;
 
   const diagnostics: GitChangeDiagnostic[] = [];
-  const trackedChanges = parseTrackedChanges(
-    trackedResult.stdout,
-    diagnostics,
-  );
+  const trackedChanges = parseTrackedChanges(trackedResult.stdout, diagnostics);
   addConflictedFiles(
     trackedChanges,
     diagnostics,
@@ -132,12 +116,10 @@ export async function detectGitChanges(
   );
   const untrackedChanges = nullFields(untrackedResult.stdout)
     .filter(isSupportedSourceFile)
-    .map(
-      (filePath): SourceFileChange => ({
-        status: "added",
-        path: normalizeProjectPath(filePath),
-      }),
-    );
+    .map((filePath): SourceFileChange => ({
+      status: "added",
+      path: normalizeProjectPath(filePath),
+    }));
   const changesWithInferredRenames = await inferExactRenames(
     [...trackedChanges, ...untrackedChanges],
     absoluteProjectRoot,
@@ -190,7 +172,7 @@ function parseTrackedChanges(
   const fields = nullFields(output);
   const changes: SourceFileChange[] = [];
 
-  for (let index = 0; index < fields.length; ) {
+  for (let index = 0; index < fields.length;) {
     const statusToken = fields[index++];
     if (!statusToken) continue;
 
@@ -256,8 +238,7 @@ function conflictedFileDiagnostic(filePath: string): GitChangeDiagnostic {
   return {
     severity: "warning",
     code: "conflicted-file",
-    message:
-      "The file has unresolved Git conflicts and is treated as modified",
+    message: "The file has unresolved Git conflicts and is treated as modified",
     path: filePath,
   };
 }
@@ -365,10 +346,7 @@ async function inferExactRenames(
 
   for (const [objectId, deletedCandidates] of deletedByObjectId) {
     const addedCandidates = addedByObjectId.get(objectId);
-    if (
-      deletedCandidates.length !== 1 ||
-      addedCandidates?.length !== 1
-    ) {
+    if (deletedCandidates.length !== 1 || addedCandidates?.length !== 1) {
       continue;
     }
 
@@ -431,9 +409,7 @@ function changesByObjectId<Change extends SourceFileChange>(
   return changesById;
 }
 
-function successfulObjectId(
-  result: GitCommandResult,
-): string | undefined {
+function successfulObjectId(result: GitCommandResult): string | undefined {
   if (result.exitCode !== 0) return undefined;
 
   const objectId = result.stdout.toString("utf8").trim();

@@ -21,22 +21,19 @@ describe("Canvas", () => {
     expect(markup).toContain("Loading project data");
   });
 
-  it("reports the snapshot received from the local analyzer", () => {
+  it("passes snapshot relationships into the reusable graph", () => {
     const markup = renderToStaticMarkup(
       <ThemeProvider theme={darkTheme}>
-        <Canvas
-          connection="live"
-          edges={[]}
-          nodes={[node("src/app.ts")]}
-        />
+        <Canvas connection="live" edges={[]} nodes={[node("src/app.ts")]} />
       </ThemeProvider>,
     );
 
-    expect(markup).toContain('aria-busy="false"');
-    expect(markup).toContain("Project data loaded");
     expect(markup).toContain(
-      "1 file and 0 imports received from the local analyzer.",
+      'aria-label="Project dependency graph with 1 file and 0 imports"',
     );
+    expect(markup).toContain('id="project-dependency-graph"');
+    expect(markup).toContain("Rendering graph");
+    expect(markup).toContain("Fit view");
   });
 });
 

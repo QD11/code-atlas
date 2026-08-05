@@ -9,8 +9,7 @@ export const SUPPORTED_SOURCE_EXTENSIONS = [
   ".cts",
 ] as const;
 
-export type SourceFileExtension =
-  (typeof SUPPORTED_SOURCE_EXTENSIONS)[number];
+export type SourceFileExtension = (typeof SUPPORTED_SOURCE_EXTENSIONS)[number];
 
 export interface FileNode {
   /**

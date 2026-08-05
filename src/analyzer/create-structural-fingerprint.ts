@@ -10,9 +10,7 @@ const ignoredAstKeys = new Set([
 ]);
 
 export function createStructuralFingerprint(value: unknown): string {
-  return createHash("sha256")
-    .update(stableSerialize(value))
-    .digest("hex");
+  return createHash("sha256").update(stableSerialize(value)).digest("hex");
 }
 
 function stableSerialize(value: unknown): string {
@@ -23,7 +21,9 @@ function stableSerialize(value: unknown): string {
     case "boolean":
       return JSON.stringify(value);
     case "number":
-      return Number.isFinite(value) ? String(value) : JSON.stringify(String(value));
+      return Number.isFinite(value)
+        ? String(value)
+        : JSON.stringify(String(value));
     case "bigint":
       return JSON.stringify({ bigint: value.toString() });
     case "undefined":

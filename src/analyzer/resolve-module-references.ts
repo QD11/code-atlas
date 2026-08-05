@@ -105,11 +105,11 @@ export function createModuleResolver({
     }
 
     const typescriptResolution = resolveWithTypeScript(
-          reference.specifier,
-          absoluteSourceFile,
-          compilerOptions,
-          moduleResolutionCache,
-          moduleResolutionHost,
+      reference.specifier,
+      absoluteSourceFile,
+      compilerOptions,
+      moduleResolutionCache,
+      moduleResolutionHost,
     );
     const resolvedFileName = typescriptResolution?.resolvedFileName;
 
@@ -201,7 +201,9 @@ function resolveProjectFileCandidate(
     : path.resolve(path.dirname(containingFile), specifier);
 
   for (const candidate of candidateFilePaths(basePath)) {
-    const file = projectFileByAbsolutePath.get(normalizeAbsolutePath(candidate));
+    const file = projectFileByAbsolutePath.get(
+      normalizeAbsolutePath(candidate),
+    );
     if (file) return file;
   }
 

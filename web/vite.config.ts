@@ -9,9 +9,19 @@ export default defineConfig({
   root: webRoot,
   plugins: [react()],
   resolve: {
-    alias: {
-      "~": path.resolve(webRoot, "src"),
-    },
+    alias: [
+      {
+        find: /^gl-bench$/,
+        replacement: path.resolve(
+          webRoot,
+          "../node_modules/gl-bench/dist/gl-bench.module.js",
+        ),
+      },
+      {
+        find: "~",
+        replacement: path.resolve(webRoot, "src"),
+      },
+    ],
   },
   server: {
     host: "127.0.0.1",

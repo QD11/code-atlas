@@ -138,9 +138,7 @@ function isLoopbackAuthority(authority: string | undefined): boolean {
 
 function isLoopbackHostname(hostname: string): boolean {
   return (
-    hostname === "localhost" ||
-    hostname === "::1" ||
-    isIpv4Loopback(hostname)
+    hostname === "localhost" || hostname === "::1" || isIpv4Loopback(hostname)
   );
 }
 
@@ -151,9 +149,7 @@ function isIpv4Loopback(hostname: string): boolean {
     octets[0] === "127" &&
     octets.every(
       (octet) =>
-        /^\d{1,3}$/.test(octet) &&
-        Number(octet) >= 0 &&
-        Number(octet) <= 255,
+        /^\d{1,3}$/.test(octet) && Number(octet) >= 0 && Number(octet) <= 255,
     )
   );
 }

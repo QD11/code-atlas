@@ -31,9 +31,7 @@ export function App() {
           onClick={toggleMode}
           type="button"
         >
-          <ModeIcon aria-hidden="true">
-            {mode === "dark" ? "☀" : "☾"}
-          </ModeIcon>
+          <ModeIcon aria-hidden="true">{mode === "dark" ? "☀" : "☾"}</ModeIcon>
           {mode === "dark" ? "Light" : "Dark"}
         </ModeButton>
         <ProjectStatus>
@@ -84,15 +82,10 @@ const BrandMark = styled.span`
   height: 25px;
   display: grid;
   place-items: center;
-  border: 1px solid
-    color-mix(in srgb, ${tokens.colors.accent} 55%, transparent);
+  border: 1px solid color-mix(in srgb, ${tokens.colors.accent} 55%, transparent);
   border-radius: 7px;
   color: ${tokens.colors.accentText};
-  background: color-mix(
-    in srgb,
-    ${tokens.colors.accent} 10%,
-    transparent
-  );
+  background: color-mix(in srgb, ${tokens.colors.accent} 10%, transparent);
   font-size: ${tokens.typography.size.xs};
   font-weight: ${tokens.typography.weight.bold};
 `;
@@ -146,9 +139,7 @@ const ChangeStatus = styled.span<{ $hasChanges?: boolean }>`
     margin-right: 5px;
     border-radius: 50%;
     background: ${({ $hasChanges }) =>
-      $hasChanges
-        ? tokens.colors.accent
-        : tokens.colors.textMuted};
+      $hasChanges ? tokens.colors.accent : tokens.colors.textMuted};
     content: "";
   }
 `;

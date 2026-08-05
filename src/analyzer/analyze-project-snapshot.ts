@@ -22,14 +22,10 @@ import type {
   ProjectSnapshotEdge,
   ProjectSnapshotNode,
 } from "~/shared/project-snapshot.js";
-import type {
-  ProjectGraph,
-  ProjectGraphEdge,
-} from "~/shared/project-graph.js";
+import type { ProjectGraph, ProjectGraphEdge } from "~/shared/project-graph.js";
 
 export interface AnalyzeProjectSnapshotOptions
-  extends AnalyzeProjectGraphOptions,
-    AnalyzeExportChangesOptions {}
+  extends AnalyzeProjectGraphOptions, AnalyzeExportChangesOptions {}
 
 export async function analyzeProjectSnapshot(
   projectRoot: string,
@@ -82,9 +78,7 @@ function combinedGraph(
   const nodeById = new Map(
     [...currentGraph.nodes, ...historicalNodes].map((node) => [node.id, node]),
   );
-  const edgeById = new Map(
-    currentGraph.edges.map((edge) => [edge.id, edge]),
-  );
+  const edgeById = new Map(currentGraph.edges.map((edge) => [edge.id, edge]));
 
   for (const historicalEdge of historicalEdges) {
     const existing = edgeById.get(historicalEdge.id);
@@ -113,9 +107,7 @@ function historicalOnlyEdgeIds(
 ): Set<string> {
   const currentIds = new Set(currentEdges.map(({ id }) => id));
   return new Set(
-    historicalEdges
-      .filter(({ id }) => !currentIds.has(id))
-      .map(({ id }) => id),
+    historicalEdges.filter(({ id }) => !currentIds.has(id)).map(({ id }) => id),
   );
 }
 

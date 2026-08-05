@@ -16,10 +16,7 @@ import type {
   ModuleReference,
   ReExportBinding,
 } from "~/shared/module-reference.js";
-import type {
-  ProjectGraph,
-  ProjectGraphEdge,
-} from "~/shared/project-graph.js";
+import type { ProjectGraph, ProjectGraphEdge } from "~/shared/project-graph.js";
 
 export interface AnalyzeChangeImpactOptions {
   /**
@@ -280,12 +277,9 @@ function changedExportOrigin(
 
   const namespace = symbol.isTypeOnly ? "type" : "value";
   return {
-    id: [
-      file.fileChange.path,
-      change.name,
-      namespace,
-      change.status,
-    ].join("\0"),
+    id: [file.fileChange.path, change.name, namespace, change.status].join(
+      "\0",
+    ),
     filePath: file.fileChange.path,
     name: change.name,
     status: change.status,

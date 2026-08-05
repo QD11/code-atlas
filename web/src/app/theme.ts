@@ -45,10 +45,8 @@ export interface ThemeValues {
 
 const typography: ThemeValues["typography"] = {
   family: {
-    sans:
-      'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-    mono:
-      '"SFMono-Regular", "Cascadia Code", Consolas, "Liberation Mono", monospace',
+    sans: 'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+    mono: '"SFMono-Regular", "Cascadia Code", Consolas, "Liberation Mono", monospace',
   },
   size: {
     xs: "10px",

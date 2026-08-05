@@ -1,6 +1,4 @@
-import type {
-  ExportedSymbolChange,
-} from "~/shared/exported-symbol-change.js";
+import type { ExportedSymbolChange } from "~/shared/exported-symbol-change.js";
 import type { ExportedSymbol } from "~/shared/exported-symbol.js";
 
 export function compareExportedSymbols(
@@ -31,11 +29,7 @@ export function compareExportedSymbols(
         name: before.name,
         before,
       });
-    } else if (
-      before &&
-      after &&
-      before.fingerprint !== after.fingerprint
-    ) {
+    } else if (before && after && before.fingerprint !== after.fingerprint) {
       changes.push({
         status: "modified",
         name: after.name,
@@ -65,11 +59,9 @@ function exportIdentity(symbol: ExportedSymbol): string {
     ].join("\0");
   }
 
-  return [
-    "named",
-    symbol.name,
-    symbol.isTypeOnly ? "type" : "value",
-  ].join("\0");
+  return ["named", symbol.name, symbol.isTypeOnly ? "type" : "value"].join(
+    "\0",
+  );
 }
 
 function compareText(left: string, right: string): number {

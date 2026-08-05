@@ -81,8 +81,7 @@ export function parseModuleReferences(
         if (specifier === undefined) {
           diagnostics.push({
             severity: "warning",
-            message:
-              "Dynamic import specifier cannot be determined statically",
+            message: "Dynamic import specifier cannot be determined statically",
           });
           return;
         }

@@ -1,10 +1,7 @@
 import type { ModuleReference } from "./module-reference.js";
 
 export type ModuleResolutionStatus =
-  | "internal"
-  | "external"
-  | "unresolved"
-  | "unsupported";
+  "internal" | "external" | "unresolved" | "unsupported";
 
 export interface ModuleReferenceResolution {
   sourceFile: string;

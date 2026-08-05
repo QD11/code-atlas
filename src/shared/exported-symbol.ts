@@ -14,11 +14,7 @@ export type ExportedSymbolKind =
   | "unknown";
 
 export type ExportedSymbolOrigin =
-  | "declaration"
-  | "local-export"
-  | "default"
-  | "re-export"
-  | "commonjs";
+  "declaration" | "local-export" | "default" | "re-export" | "commonjs";
 
 export interface ExportedSymbol {
   /**

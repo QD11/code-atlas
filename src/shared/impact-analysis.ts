@@ -1,11 +1,7 @@
-import type {
-  ExportedSymbolChangeStatus,
-} from "./exported-symbol-change.js";
+import type { ExportedSymbolChangeStatus } from "./exported-symbol-change.js";
 
 export type FileImpactLevel =
-  | "direct-change"
-  | "direct-impact"
-  | "transitive-impact";
+  "direct-change" | "direct-impact" | "transitive-impact";
 
 export interface ChangedExportOrigin {
   id: string;

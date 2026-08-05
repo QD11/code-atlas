@@ -42,8 +42,7 @@ export async function analyzeProjectGraph(
   const absoluteProjectRoot = path.resolve(projectRoot);
   const maxConcurrency = validatedConcurrency(options.maxConcurrency);
   const projectFiles = await discoverSourceFiles(absoluteProjectRoot, {
-    additionalIgnoredDirectoryNames:
-      options.additionalIgnoredDirectoryNames,
+    additionalIgnoredDirectoryNames: options.additionalIgnoredDirectoryNames,
   });
   const projectConfig = loadTypeScriptProjectConfig(absoluteProjectRoot);
   const moduleResolver = createModuleResolver({

@@ -71,7 +71,9 @@ export async function discoverSourceFiles(
   }
 }
 
-function sourceFileExtension(fileName: string): SourceFileExtension | undefined {
+function sourceFileExtension(
+  fileName: string,
+): SourceFileExtension | undefined {
   const extension = path.extname(fileName).toLowerCase();
 
   return supportedExtensions.has(extension)

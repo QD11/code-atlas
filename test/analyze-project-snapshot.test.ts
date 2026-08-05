@@ -18,9 +18,9 @@ const temporaryDirectories: string[] = [];
 
 afterEach(async () => {
   await Promise.all(
-    temporaryDirectories.splice(0).map((directory) =>
-      rm(directory, { recursive: true, force: true }),
-    ),
+    temporaryDirectories
+      .splice(0)
+      .map((directory) => rm(directory, { recursive: true, force: true })),
   );
 });
 
@@ -228,9 +228,7 @@ describe("analyzeProjectSnapshot", () => {
 
     const snapshot = await analyzeProjectSnapshot(projectRoot);
 
-    expect(
-      snapshot.changedFiles.map(({ fileChange }) => fileChange),
-    ).toEqual([
+    expect(snapshot.changedFiles.map(({ fileChange }) => fileChange)).toEqual([
       {
         status: "renamed",
         path: "src/new-name.ts",
@@ -292,12 +290,7 @@ async function createTemporaryRepository(
   await writeProjectFiles(projectRoot, files);
   await git(projectRoot, "init", "-b", "main");
   await git(projectRoot, "config", "user.name", "Code Atlas Tests");
-  await git(
-    projectRoot,
-    "config",
-    "user.email",
-    "tests@code-atlas.local",
-  );
+  await git(projectRoot, "config", "user.email", "tests@code-atlas.local");
   return projectRoot;
 }
 
@@ -312,15 +305,15 @@ async function writeProjectFiles(
   }
 }
 
-async function commitAll(
-  projectRoot: string,
-  message: string,
-): Promise<void> {
+async function commitAll(projectRoot: string, message: string): Promise<void> {
   await git(projectRoot, "add", ".");
   await git(projectRoot, "commit", "-m", message);
 }
 
-async function git(projectRoot: string, ...arguments_: string[]): Promise<void> {
+async function git(
+  projectRoot: string,
+  ...arguments_: string[]
+): Promise<void> {
   await execFileAsync("git", arguments_, {
     cwd: projectRoot,
     encoding: "utf8",

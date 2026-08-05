@@ -1,7 +1,4 @@
-import type {
-  ExportDefaultDeclaration,
-  Expression,
-} from "oxc-parser";
+import type { ExportDefaultDeclaration, Expression } from "oxc-parser";
 import type { ExportedSymbolKind } from "~/shared/exported-symbol.js";
 
 export function defaultDeclarationKind(

@@ -29,14 +29,11 @@ export type SnapshotServiceEvent =
 export interface ProjectSnapshotService {
   getState(): SnapshotState;
   refresh(): Promise<SnapshotState>;
-  subscribe(
-    listener: (event: SnapshotServiceEvent) => void,
-  ): () => void;
+  subscribe(listener: (event: SnapshotServiceEvent) => void): () => void;
   close(): Promise<void>;
 }
 
-export interface CreateProjectSnapshotServiceOptions
-  extends AnalyzeProjectSnapshotOptions {
+export interface CreateProjectSnapshotServiceOptions extends AnalyzeProjectSnapshotOptions {
   projectRoot: string;
   /**
    * Watches source, project configuration, and relevant Git state.
@@ -57,9 +54,7 @@ const watchedConfigurationNames = new Set([
   "package.json",
   "tsconfig.json",
 ]);
-const supportedExtensions = new Set<string>(
-  SUPPORTED_SOURCE_EXTENSIONS,
-);
+const supportedExtensions = new Set<string>(SUPPORTED_SOURCE_EXTENSIONS);
 
 export async function createProjectSnapshotService(
   options: CreateProjectSnapshotServiceOptions,
@@ -213,10 +208,7 @@ async function createWatcher(
           return false;
         }
 
-        const relativePath = path.relative(
-          watchedProjectRoot,
-          absolutePath,
-        );
+        const relativePath = path.relative(watchedProjectRoot, absolutePath);
         if (
           relativePath === ".." ||
           relativePath.startsWith(`..${path.sep}`) ||
@@ -227,9 +219,7 @@ async function createWatcher(
         if (!relativePath) return false;
 
         const segments = relativePath.split(path.sep);
-        if (
-          segments.some((segment) => ignoredDirectories.has(segment))
-        ) {
+        if (segments.some((segment) => ignoredDirectories.has(segment))) {
           return true;
         }
         if (!stats || stats.isDirectory()) return false;
@@ -245,10 +235,7 @@ async function createWatcher(
         return;
       }
 
-      const relativePath = path.relative(
-        watchedProjectRoot,
-        absolutePath,
-      );
+      const relativePath = path.relative(watchedProjectRoot, absolutePath);
       if (isWatchedProjectFile(relativePath)) onChange();
     });
 
@@ -293,12 +280,7 @@ async function gitStatePaths(projectRoot: string): Promise<string[]> {
     const results = await Promise.all(
       ["index", "HEAD", "refs", "packed-refs"].map((gitPath) =>
         runGit(
-          [
-            "rev-parse",
-            "--path-format=absolute",
-            "--git-path",
-            gitPath,
-          ],
+          ["rev-parse", "--path-format=absolute", "--git-path", gitPath],
           projectRoot,
         ),
       ),

@@ -1,8 +1,5 @@
 export type SourceFileChangeStatus =
-  | "added"
-  | "modified"
-  | "deleted"
-  | "renamed";
+  "added" | "modified" | "deleted" | "renamed";
 
 export interface AddedSourceFileChange {
   status: "added";

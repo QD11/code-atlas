@@ -74,9 +74,7 @@ describe("ProjectSnapshotStore", () => {
   });
 });
 
-function eventTransport(
-  load: ProjectSnapshotTransport["load"],
-): {
+function eventTransport(load: ProjectSnapshotTransport["load"]): {
   close: ReturnType<typeof vi.fn>;
   emitError: (message: string) => void;
   emitSnapshot: () => void;
@@ -84,8 +82,7 @@ function eventTransport(
 } {
   const close = vi.fn();
   let handlers:
-    | Parameters<ProjectSnapshotTransport["subscribe"]>[0]
-    | undefined;
+    Parameters<ProjectSnapshotTransport["subscribe"]>[0] | undefined;
 
   return {
     close,

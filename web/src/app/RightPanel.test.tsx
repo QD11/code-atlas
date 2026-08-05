@@ -15,8 +15,6 @@ describe("RightPanel", () => {
 
     expect(markup).toContain('aria-label="Details panel"');
     expect(markup).toContain("Details");
-    expect(markup).toContain(
-      "Selected file information will live here.",
-    );
+    expect(markup).toContain("Selected file information will live here.");
   });
 });

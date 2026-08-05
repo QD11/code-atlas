@@ -1,0 +1,5 @@
+.playground/
+coverage/
+dist/
+node_modules/
+test-projects/

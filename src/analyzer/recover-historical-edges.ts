@@ -50,9 +50,8 @@ export function recoverHistoricalEdges(
     const sourceFile = sourceByPath.get(unresolved.sourceFile);
     if (!sourceFile) continue;
 
-    const retried = moduleResolver.resolve(sourceFile, [
-      unresolved.reference,
-    ]).resolutions[0];
+    const retried = moduleResolver.resolve(sourceFile, [unresolved.reference])
+      .resolutions[0];
     if (retried?.status !== "internal" || !retried.targetFile) continue;
 
     const outputTargetId = targetByHistoricalPath.get(retried.targetFile);
@@ -124,9 +123,7 @@ function fileNode(filePath: string): FileNode {
 function isSupportedExtension(
   extension: string,
 ): extension is SourceFileExtension {
-  return (SUPPORTED_SOURCE_EXTENSIONS as readonly string[]).includes(
-    extension,
-  );
+  return (SUPPORTED_SOURCE_EXTENSIONS as readonly string[]).includes(extension);
 }
 
 function addRecoveredEdge(

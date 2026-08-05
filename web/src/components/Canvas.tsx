@@ -1,9 +1,12 @@
+import { useRef } from "react";
 import type {
   ProjectSnapshotEdge,
   ProjectSnapshotNode,
 } from "@shared/project-snapshot.js";
 import styled, { keyframes } from "styled-components";
 import { tokens } from "~/app/theme";
+import { Graph, type GraphHandle } from "~/components/Graph";
+import { Button } from "~/components/ui";
 
 interface CanvasProps {
   connection: "connecting" | "live" | "error";
@@ -12,14 +15,9 @@ interface CanvasProps {
   nodes: ProjectSnapshotNode[];
 }
 
-export function Canvas({
-  connection,
-  edges,
-  message,
-  nodes,
-}: CanvasProps) {
-  const isLoading =
-    connection === "connecting" && nodes.length === 0;
+export function Canvas({ connection, edges, message, nodes }: CanvasProps) {
+  const graphRef = useRef<GraphHandle>(null);
+  const isLoading = connection === "connecting" && nodes.length === 0;
   const hasSnapshot = nodes.length > 0;
 
   return (
@@ -32,6 +30,11 @@ export function Canvas({
           <strong>{edges.length}</strong> imports
         </Stat>
         <ToolbarSpacer />
+        {hasSnapshot ? (
+          <Button onClick={() => graphRef.current?.fitView()} type="button">
+            Fit view
+          </Button>
+        ) : null}
         <Connection $connection={connection}>
           {connection === "live"
             ? "Live"
@@ -41,32 +44,33 @@ export function Canvas({
         </Connection>
       </Toolbar>
 
-      <Status
-        aria-busy={isLoading}
-        aria-live="polite"
-        role="status"
-      >
-        {isLoading ? <LoadingSpinner aria-hidden="true" /> : null}
-        <StatusTitle>
-          {isLoading
-            ? "Loading project data"
-            : connection === "error" && !hasSnapshot
-              ? "Could not load project data"
-              : hasSnapshot
-                ? "Project data loaded"
+      {hasSnapshot ? (
+        <Graph
+          edges={edges}
+          id="project-dependency-graph"
+          label={`Project dependency graph with ${nodes.length} ${
+            nodes.length === 1 ? "file" : "files"
+          } and ${edges.length} ${edges.length === 1 ? "import" : "imports"}`}
+          nodes={nodes}
+          ref={graphRef}
+          simulationEnabled
+        />
+      ) : (
+        <Status aria-busy={isLoading} aria-live="polite" role="status">
+          {isLoading ? <LoadingSpinner aria-hidden="true" /> : null}
+          <StatusTitle>
+            {isLoading
+              ? "Loading project data"
+              : connection === "error"
+                ? "Could not load project data"
                 : "No supported files found"}
-        </StatusTitle>
-        <StatusDescription>
-          {message ??
-            (hasSnapshot
-              ? `${nodes.length} ${
-                  nodes.length === 1 ? "file" : "files"
-                } and ${edges.length} ${
-                  edges.length === 1 ? "import" : "imports"
-                } received from the local analyzer.`
-              : "Code Atlas is connected to the local project analyzer.")}
-        </StatusDescription>
-      </Status>
+          </StatusTitle>
+          <StatusDescription>
+            {message ??
+              "Code Atlas is connected to the local project analyzer."}
+          </StatusDescription>
+        </Status>
+      )}
     </Surface>
   );
 }
@@ -92,6 +96,7 @@ const Surface = styled.main`
 
 const Toolbar = styled.div`
   position: absolute;
+  z-index: 2;
   top: 10px;
   right: 10px;
   left: 10px;
@@ -102,11 +107,7 @@ const Toolbar = styled.div`
   padding: 4px 12px;
   border: 1px solid ${tokens.colors.border};
   border-radius: 8px;
-  background: color-mix(
-    in srgb,
-    ${tokens.colors.surface} 88%,
-    transparent
-  );
+  background: color-mix(in srgb, ${tokens.colors.surface} 88%, transparent);
   backdrop-filter: blur(12px);
 `;
 
@@ -134,9 +135,7 @@ const Connection = styled.span<{
   $connection: CanvasProps["connection"];
 }>`
   color: ${({ $connection }) =>
-    $connection === "error"
-      ? tokens.colors.accent
-      : tokens.colors.textMuted};
+    $connection === "error" ? tokens.colors.accent : tokens.colors.textMuted};
   font-size: ${tokens.typography.size.xs};
 `;
 
@@ -148,11 +147,7 @@ const Status = styled.div`
   padding: 20px 24px;
   border: 1px solid ${tokens.colors.border};
   border-radius: 10px;
-  background: color-mix(
-    in srgb,
-    ${tokens.colors.surface} 92%,
-    transparent
-  );
+  background: color-mix(in srgb, ${tokens.colors.surface} 92%, transparent);
   transform: translate(-50%, -50%);
   text-align: center;
 `;
@@ -168,8 +163,7 @@ const LoadingSpinner = styled.span`
   height: 28px;
   display: block;
   margin: 0 auto 12px;
-  border: 3px solid
-    color-mix(in srgb, ${tokens.colors.accent} 20%, transparent);
+  border: 3px solid color-mix(in srgb, ${tokens.colors.accent} 20%, transparent);
   border-top-color: ${tokens.colors.accent};
   border-radius: 50%;
   animation: ${rotate} 700ms linear infinite;

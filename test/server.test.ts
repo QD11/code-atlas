@@ -7,7 +7,9 @@ import {
 
 describe("local server", () => {
   it("reports the selected project root", async () => {
-    const projectRoot = path.resolve("test-projects/sample-project-template/base");
+    const projectRoot = path.resolve(
+      "test-projects/sample-project-template/base",
+    );
     const app = await createServer({ projectRoot, watch: false });
 
     const response = await app.inject({
@@ -92,9 +94,7 @@ describe("local server", () => {
       revision: 2,
     });
 
-    expect(contents).toBe(
-      'event: snapshot\ndata: {"revision":2}\n\n',
-    );
+    expect(contents).toBe('event: snapshot\ndata: {"revision":2}\n\n');
     expect(contents).not.toContain("projectRoot");
     expect(contents).not.toContain("nodes");
   });
