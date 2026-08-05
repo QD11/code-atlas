@@ -6,8 +6,23 @@ const repositoryRoot = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   resolve: {
-    alias: {
-      "~": path.join(repositoryRoot, "src"),
-    },
+    alias: [
+      {
+        find: "@shared",
+        replacement: path.join(repositoryRoot, "src/shared"),
+      },
+      {
+        find: "~/app",
+        replacement: path.join(repositoryRoot, "web/src/app"),
+      },
+      {
+        find: "~/components",
+        replacement: path.join(repositoryRoot, "web/src/components"),
+      },
+      {
+        find: "~",
+        replacement: path.join(repositoryRoot, "src"),
+      },
+    ],
   },
 });
