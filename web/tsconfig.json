@@ -9,9 +9,6 @@
     "moduleResolution": "Bundler",
     "noEmit": true,
     "noUncheckedIndexedAccess": true,
-    "paths": {
-      "~/*": ["./src/*"]
-    },
     "skipLibCheck": true,
     "strict": true,
     "target": "ES2023",
