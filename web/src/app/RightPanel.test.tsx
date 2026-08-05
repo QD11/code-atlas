@@ -14,6 +14,14 @@ describe("RightPanel", () => {
     );
 
     expect(markup).toContain('aria-label="Details panel"');
+    expect(markup).toContain('aria-label="Resize details panel"');
+    expect(markup).toContain('role="separator"');
+    expect(markup).toContain('aria-orientation="vertical"');
+    expect(markup).toContain('aria-valuemin="240"');
+    expect(markup).toContain('aria-valuemax="560"');
+    expect(markup).toContain('aria-valuenow="300"');
+    expect(markup).toContain('aria-label="Hide details panel"');
+    expect(markup).toContain('aria-expanded="true"');
     expect(markup).toContain("Details");
     expect(markup).toContain("Selected file information will live here.");
   });
