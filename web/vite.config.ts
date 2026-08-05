@@ -8,6 +8,11 @@ const webRoot = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig({
   root: webRoot,
   plugins: [react()],
+  resolve: {
+    alias: {
+      "~": path.resolve(webRoot, "src"),
+    },
+  },
   server: {
     host: "127.0.0.1",
     port: 5173,
