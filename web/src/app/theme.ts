@@ -11,6 +11,15 @@ export interface ThemeValues {
     textMuted: string;
     accent: string;
     accentText: string;
+    fileState: {
+      changed: string;
+      directImpact: string;
+      transitiveImpact: string;
+      unchanged: string;
+    };
+    relationship: {
+      selected: string;
+    };
   };
   typography: {
     family: {
@@ -84,6 +93,15 @@ export const darkTheme: ThemeValues = {
     textMuted: "#858b96",
     accent: "#758bff",
     accentText: "#a4b2ff",
+    fileState: {
+      changed: "#ff7eb6",
+      directImpact: "#f1c21b",
+      transitiveImpact: "#33b1ff",
+      unchanged: "#6f6f6f",
+    },
+    relationship: {
+      selected: "#78a9ff",
+    },
   },
   typography,
 };
@@ -99,6 +117,15 @@ export const lightTheme: ThemeValues = {
     textMuted: "#69707c",
     accent: "#536de5",
     accentText: "#4058c9",
+    fileState: {
+      changed: "#9f1853",
+      directImpact: "#8e6a00",
+      transitiveImpact: "#00539a",
+      unchanged: "#6f6f6f",
+    },
+    relationship: {
+      selected: "#0043ce",
+    },
   },
   typography,
 };
