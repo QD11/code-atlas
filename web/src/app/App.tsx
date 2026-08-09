@@ -48,7 +48,14 @@ export function App() {
 
       <Workspace>
         <LeftPanelSlot>
-          <LeftPanel />
+          <LeftPanel
+            nodes={nodes}
+            onFileSelect={(fileId) => {
+              setSelectedFileId(fileId);
+              setIsRightPanelOpen(true);
+            }}
+            selectedFileId={selectedFile?.id}
+          />
         </LeftPanelSlot>
         <Canvas
           connection={connection}
