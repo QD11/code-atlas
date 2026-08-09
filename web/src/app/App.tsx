@@ -6,7 +6,7 @@ import { useProjectSnapshot } from "~/app/projectSnapshotStore";
 import { RightPanel } from "~/app/RightPanel";
 import { tokens } from "~/app/theme";
 import { Canvas } from "~/components/Canvas";
-import { Button } from "~/components/ui";
+import { Button } from "~/components/ui/Button";
 
 export function App() {
   const { mode, toggleMode } = useColorMode();
