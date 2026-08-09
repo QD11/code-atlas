@@ -8,6 +8,7 @@ export type GraphColor = readonly [
 export interface GraphNode {
   id: string;
   color?: GraphColor;
+  name?: string;
   size?: number;
 }
 

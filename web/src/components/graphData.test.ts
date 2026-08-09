@@ -50,6 +50,18 @@ describe("buildCosmosGraphData", () => {
     expect([...first.pointPositions.slice(0, 2)]).toEqual([0, 0]);
   });
 
+  it("shows arrows for relationships unless an edge opts out", () => {
+    const result = buildCosmosGraphData(
+      [{ id: "a" }, { id: "b" }, { id: "c" }],
+      [
+        { source: "a", target: "b" },
+        { source: "b", target: "c", directed: false },
+      ],
+    );
+
+    expect(result.linkArrows).toEqual([true, false]);
+  });
+
   it("builds point-color updates independently from graph positions", () => {
     const colors = buildPointColors(3, [[1, 0, 0, 1], undefined, [0, 0, 1, 1]]);
 

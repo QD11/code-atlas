@@ -1,6 +1,6 @@
 {
   "name": "@dububu/code-atlas",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Visualize how exported-symbol changes affect a JavaScript or TypeScript project.",
   "license": "MIT",
   "type": "module",

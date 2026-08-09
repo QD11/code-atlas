@@ -43,6 +43,12 @@ export interface GraphProps {
   simulationEnabled?: boolean;
 }
 
+interface HoveredNode {
+  label: string;
+  x: number;
+  y: number;
+}
+
 type RendererStatus = "loading" | "ready" | "error";
 
 const SIMULATION_START_ALPHA = 0.4;
@@ -53,7 +59,7 @@ const GRAPH_CONFIG: CosmosGraphConfig = {
   enableDrag: true,
   enableSimulation: false,
   hoveredPointCursor: "pointer",
-  linkArrowsSizeScale: 0.7,
+  linkArrowsSizeScale: 1,
   linkDefaultArrows: true,
   linkDefaultWidth: 1,
   linkGreyoutOpacity: 0.06,
@@ -90,6 +96,8 @@ export function Graph({
   const graphRef = useRef<CosmosGraph | undefined>(undefined);
 
   const [rendererAvailable, setRendererAvailable] = useState(false);
+
+  const [hoveredNode, setHoveredNode] = useState<HoveredNode>();
 
   const [status, setStatus] = useState<RendererStatus>(
     nodes.length === 0 ? "ready" : "loading",
@@ -213,6 +221,21 @@ export function Graph({
 
     graph.setConfigPartial({
       onBackgroundClick: () => onNodeSelect?.(undefined),
+      onMouseMove: (index, _pointPosition, event) => {
+        const node = index === undefined ? undefined : nodes[index];
+        const bounds = containerRef.current?.getBoundingClientRect();
+
+        if (!node || !bounds) {
+          setHoveredNode(undefined);
+          return;
+        }
+
+        setHoveredNode({
+          label: node.name ?? node.id,
+          x: event.clientX - bounds.left,
+          y: event.clientY - bounds.top,
+        });
+      },
       onPointClick: (index) => onNodeSelect?.(nodes[index]?.id),
     });
   }, [nodes, onNodeSelect, rendererAvailable]);
@@ -224,9 +247,16 @@ export function Graph({
       aria-busy={status === "loading"}
       aria-label={label}
       id={id}
+      onMouseLeave={() => setHoveredNode(undefined)}
       role="region"
     >
       <GraphHost ref={containerRef} />
+
+      {hoveredNode ? (
+        <NodeTooltip $x={hoveredNode.x} $y={hoveredNode.y} aria-hidden="true">
+          {hoveredNode.label}
+        </NodeTooltip>
+      ) : null}
 
       {status === "loading" ? (
         <Status aria-live="polite">Rendering graph…</Status>
@@ -297,6 +327,29 @@ const Surface = styled.div`
 const GraphHost = styled.div`
   position: absolute;
   inset: 0;
+`;
+
+const NodeTooltip = styled.div<{ $x: number; $y: number }>`
+  position: absolute;
+  z-index: 3;
+  top: ${({ $y }) => `${$y}px`};
+  left: ${({ $x }) => `${$x}px`};
+  max-width: min(20rem, calc(100% - 2rem));
+  padding: 0.3rem 0.45rem;
+  overflow: hidden;
+  border: 1px solid ${tokens.colors.border};
+  border-radius: 5px;
+  color: ${tokens.colors.text};
+  background: ${tokens.colors.surfaceRaised};
+  box-shadow: 0 4px 14px
+    color-mix(in srgb, ${tokens.colors.background} 35%, transparent);
+  font-family: ${tokens.typography.family.mono};
+  font-size: ${tokens.typography.size.xs};
+  line-height: ${tokens.typography.lineHeight.tight};
+  pointer-events: none;
+  text-overflow: ellipsis;
+  transform: translate(-50%, calc(-100% - 0.75rem));
+  white-space: nowrap;
 `;
 
 const Status = styled.div`
