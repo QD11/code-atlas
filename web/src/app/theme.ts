@@ -97,7 +97,7 @@ export const darkTheme: ThemeValues = {
       changed: "#ff7eb6",
       directImpact: "#f1c21b",
       transitiveImpact: "#33b1ff",
-      unchanged: "#6f6f6f",
+      unchanged: "#758bff",
     },
     relationship: {
       selected: "#78a9ff",
@@ -121,7 +121,7 @@ export const lightTheme: ThemeValues = {
       changed: "#9f1853",
       directImpact: "#8e6a00",
       transitiveImpact: "#00539a",
-      unchanged: "#6f6f6f",
+      unchanged: "#536de5",
     },
     relationship: {
       selected: "#0043ce",
