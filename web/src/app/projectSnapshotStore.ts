@@ -13,6 +13,7 @@ export interface ProjectSnapshotViewState {
 }
 
 interface SnapshotEventHandlers {
+  onReady: () => void;
   onSnapshot: () => void;
   onError: (message: string) => void;
 }
@@ -60,6 +61,10 @@ export class ProjectSnapshotStore {
     });
 
     this.eventSubscription = this.transport.subscribe({
+      onReady: () => {
+        if (!this.started || this.state.connection !== "error") return;
+        void this.refresh();
+      },
       onSnapshot: () => void this.refresh(),
       onError: (message) => {
         if (!this.started) return;
@@ -123,6 +128,7 @@ const browserTransport: ProjectSnapshotTransport = {
   subscribe(handlers) {
     const events = new EventSource("/api/events");
 
+    events.addEventListener("ready", handlers.onReady);
     events.addEventListener("snapshot", handlers.onSnapshot);
     events.addEventListener("analysis-error", (event) => {
       handlers.onError(eventMessage(event));
