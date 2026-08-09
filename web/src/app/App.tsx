@@ -1,3 +1,4 @@
+import { useState } from "react";
 import styled from "styled-components";
 import { useColorMode } from "~/app/AppThemeProvider";
 import { LeftPanel } from "~/app/LeftPanel";
@@ -10,8 +11,11 @@ import { Button } from "~/components/ui";
 export function App() {
   const { mode, toggleMode } = useColorMode();
   const { connection, data, message } = useProjectSnapshot();
+  const [selectedFileId, setSelectedFileId] = useState<string>();
+  const [isRightPanelOpen, setIsRightPanelOpen] = useState(true);
   const nodes = data?.snapshot.graph.nodes ?? [];
   const edges = data?.snapshot.graph.edges ?? [];
+  const selectedFile = nodes.find(({ id }) => id === selectedFileId);
   const projectLabel = data
     ? projectName(data.snapshot.projectRoot)
     : "Waiting for project";
@@ -43,14 +47,27 @@ export function App() {
       </Header>
 
       <Workspace>
-        <LeftPanel />
+        <LeftPanelSlot>
+          <LeftPanel />
+        </LeftPanelSlot>
         <Canvas
           connection={connection}
           edges={edges}
           message={message}
           nodes={nodes}
+          onFileSelect={(fileId) => {
+            setSelectedFileId(fileId);
+            if (fileId) setIsRightPanelOpen(true);
+          }}
+          selectedFileId={selectedFile?.id}
         />
-        <RightPanel />
+        <RightPanel
+          edges={edges}
+          isOpen={isRightPanelOpen}
+          nodes={nodes}
+          onOpenChange={setIsRightPanelOpen}
+          selectedFile={selectedFile}
+        />
       </Workspace>
     </Shell>
   );
@@ -65,7 +82,7 @@ function projectName(projectRoot: string): string {
 const Shell = styled.div`
   height: 100dvh;
   display: grid;
-  grid-template-rows: 44px minmax(0, 1fr);
+  grid-template-rows: 2.75rem minmax(0, 1fr);
 `;
 
 const Header = styled.header`
@@ -142,14 +159,28 @@ const ChangeStatus = styled.span<{ $hasChanges?: boolean }>`
       $hasChanges ? tokens.colors.accent : tokens.colors.textMuted};
     content: "";
   }
+
+  @media (max-width: 40rem) {
+    display: none;
+  }
 `;
 
 const Workspace = styled.div`
   min-height: 0;
   display: grid;
-  grid-template-columns: 260px minmax(0, 1fr) auto;
+  grid-template-columns: clamp(10rem, 18vw, 16.25rem) minmax(0, 1fr) auto;
 
-  @media (max-width: 1100px) {
-    grid-template-columns: 220px minmax(0, 1fr) auto;
+  @media (max-width: 40rem) {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+`;
+
+const LeftPanelSlot = styled.div`
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+
+  @media (max-width: 40rem) {
+    display: none;
   }
 `;

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildCosmosGraphData } from "./graphData";
+import { buildCosmosGraphData, findConnectedLinkIndices } from "./graphData";
 
 describe("buildCosmosGraphData", () => {
   it("maps stable node identifiers to Cosmos point and link arrays", () => {
@@ -40,5 +40,13 @@ describe("buildCosmosGraphData", () => {
 
     expect([...first.pointPositions]).toEqual([...second.pointPositions]);
     expect([...first.pointPositions.slice(0, 2)]).toEqual([0, 0]);
+  });
+
+  it("finds only links connected to a selected node", () => {
+    const links = new Float32Array([0, 1, 2, 0, 1, 2]);
+
+    expect(findConnectedLinkIndices(links, 0)).toEqual([0, 1]);
+    expect(findConnectedLinkIndices(links, 1)).toEqual([0, 2]);
+    expect(findConnectedLinkIndices(links, 3)).toEqual([]);
   });
 });

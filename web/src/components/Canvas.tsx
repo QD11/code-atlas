@@ -13,9 +13,18 @@ interface CanvasProps {
   edges: ProjectSnapshotEdge[];
   message?: string;
   nodes: ProjectSnapshotNode[];
+  onFileSelect?: (fileId: string | undefined) => void;
+  selectedFileId?: string;
 }
 
-export function Canvas({ connection, edges, message, nodes }: CanvasProps) {
+export function Canvas({
+  connection,
+  edges,
+  message,
+  nodes,
+  onFileSelect,
+  selectedFileId,
+}: CanvasProps) {
   const graphRef = useRef<GraphHandle>(null);
   const isLoading = connection === "connecting" && nodes.length === 0;
   const hasSnapshot = nodes.length > 0;
@@ -52,7 +61,9 @@ export function Canvas({ connection, edges, message, nodes }: CanvasProps) {
             nodes.length === 1 ? "file" : "files"
           } and ${edges.length} ${edges.length === 1 ? "import" : "imports"}`}
           nodes={nodes}
+          onNodeSelect={onFileSelect}
           ref={graphRef}
+          selectedNodeId={selectedFileId}
           simulationEnabled
         />
       ) : (

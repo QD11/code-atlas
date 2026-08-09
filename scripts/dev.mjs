@@ -4,15 +4,13 @@ import path from "node:path";
 import process from "node:process";
 import open from "open";
 
-const target = path.resolve(
-  process.argv[2] ?? path.join(".playground", "sample-project"),
-);
+const target = path.resolve(process.argv[2] ?? "web");
 
 try {
   await access(target);
 } catch {
   console.error(`Project not found: ${target}`);
-  console.error("Create it first with: npm run playground");
+  console.error("Pass an existing project path with: npm run dev -- <path>");
   process.exit(1);
 }
 

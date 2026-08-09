@@ -14,6 +14,7 @@ import styled, { useTheme } from "styled-components";
 import { tokens } from "~/app/theme";
 import {
   buildCosmosGraphData,
+  findConnectedLinkIndices,
   type CosmosGraphData,
   type GraphEdge,
   type GraphNode,
@@ -38,24 +39,31 @@ export interface GraphProps {
 
 type RendererStatus = "loading" | "ready" | "error";
 
+const SIMULATION_START_ALPHA = 0.4;
+
 const GRAPH_CONFIG: CosmosGraphConfig = {
   attribution: "cosmos.gl",
-  curvedLinks: true,
+  curvedLinks: false,
   enableDrag: true,
   enableSimulation: false,
   hoveredPointCursor: "pointer",
-  initialZoomLevel: 1,
+  linkArrowsSizeScale: 0.7,
   linkDefaultArrows: true,
-  linkOpacity: 0.55,
-  pointDefaultSize: 7,
+  linkDefaultWidth: 1,
+  linkGreyoutOpacity: 0.06,
+  linkOpacity: 0.32,
+  pointDefaultSize: 16,
+  pointGreyoutOpacity: 0.35,
+  pointSizeScale: 1,
   randomSeed: "code-atlas",
   renderHoveredPointRing: true,
-  simulationCollision: 0.7,
-  simulationCollisionPadding: 2,
-  simulationFriction: 0.6,
-  simulationGravity: 0.12,
-  simulationLinkSpring: 0.8,
-  simulationRepulsion: 0.7,
+  simulationCollision: 0.35,
+  simulationCollisionPadding: 3,
+  simulationFriction: 0.4,
+  simulationGravity: 0.04,
+  simulationLinkDistance: 48,
+  simulationLinkSpring: 0.2,
+  simulationRepulsion: 0.65,
 };
 
 export function Graph({
@@ -135,16 +143,17 @@ export function Graph({
 
     graph.setConfigPartial({ enableSimulation: simulationEnabled });
     if (simulationEnabled && graphData.pointPositions.length > 0) {
-      graph.start(0.8);
+      graph.start(SIMULATION_START_ALPHA);
     }
   }, [graphData, rendererAvailable, simulationEnabled]);
 
   useEffect(() => {
     graphRef.current?.setConfigPartial({
       backgroundColor: theme.colors.canvas,
-      focusedPointRingColor: theme.colors.accent,
+      focusedPointRingColor: theme.colors.text,
       hoveredPointRingColor: theme.colors.text,
       linkDefaultColor: theme.colors.textMuted,
+      outlinedPointRingColor: theme.colors.accentText,
       pointDefaultColor: theme.colors.accent,
     });
   }, [rendererAvailable, theme]);
@@ -214,9 +223,16 @@ function applySelection(
 ): void {
   const selectedIndex =
     selectedNodeId && data ? data.nodeIndices.get(selectedNodeId) : undefined;
+  const connectedLinkIndices =
+    selectedIndex === undefined || !data
+      ? undefined
+      : findConnectedLinkIndices(data.links, selectedIndex);
 
   graph.setConfigPartial({
     focusedPointIndex: selectedIndex,
+    highlightedLinkIndices: connectedLinkIndices,
+    highlightedPointIndices:
+      selectedIndex === undefined ? undefined : [selectedIndex],
     outlinedPointIndices:
       selectedIndex === undefined ? undefined : [selectedIndex],
   });
