@@ -14,8 +14,13 @@ import styled, { useTheme } from "styled-components";
 import { tokens } from "~/app/theme";
 import {
   buildCosmosGraphData,
+  buildPointColors,
+  buildSelectedLinkAppearance,
   findConnectedLinkIndices,
+  findConnectedPointIndices,
+  graphColorFromHex,
   type CosmosGraphData,
+  type GraphColor,
   type GraphEdge,
   type GraphNode,
 } from "~/components/graphData";
@@ -30,6 +35,7 @@ export interface GraphProps {
   edges: readonly GraphEdge[];
   id: string;
   label?: string;
+  nodeColors?: readonly (GraphColor | undefined)[];
   nodes: readonly GraphNode[];
   onNodeSelect?: (nodeId: string | undefined) => void;
   ref?: Ref<GraphHandle>;
@@ -70,6 +76,7 @@ export function Graph({
   edges,
   id,
   label = "Graph visualization",
+  nodeColors,
   nodes,
   onNodeSelect,
   ref,
@@ -91,6 +98,21 @@ export function Graph({
   const graphData = useMemo(
     () => buildCosmosGraphData(nodes, edges),
     [edges, nodes],
+  );
+  const pointColorOverride = useMemo(
+    () => (nodeColors ? buildPointColors(nodes.length, nodeColors) : undefined),
+    [nodeColors, nodes.length],
+  );
+  const hasSelectedNode =
+    selectedNodeId !== undefined && graphData.nodeIndices.has(selectedNodeId);
+  const selectedLinkAppearance = useMemo(
+    () =>
+      buildSelectedLinkAppearance(
+        graphData,
+        selectedNodeId,
+        graphColorFromHex(theme.colors.relationship.selected),
+      ),
+    [graphData, selectedNodeId, theme.colors.relationship],
   );
 
   useImperativeHandle(
@@ -139,6 +161,24 @@ export function Graph({
 
   useEffect(() => {
     const graph = graphRef.current;
+    if (!graph || !pointColorOverride) return;
+
+    graph.setPointColors(pointColorOverride);
+    graph.render(undefined, 0);
+  }, [pointColorOverride, rendererAvailable]);
+
+  useEffect(() => {
+    const graph = graphRef.current;
+    if (!graph) return;
+
+    graph.setLinkColors(selectedLinkAppearance.linkColors);
+    graph.setLinkStyles(selectedLinkAppearance.linkStyles);
+    graph.setLinkWidths(selectedLinkAppearance.linkWidths);
+    graph.render(undefined, 0);
+  }, [rendererAvailable, selectedLinkAppearance]);
+
+  useEffect(() => {
+    const graph = graphRef.current;
     if (!graph) return;
 
     graph.setConfigPartial({ enableSimulation: simulationEnabled });
@@ -153,10 +193,12 @@ export function Graph({
       focusedPointRingColor: theme.colors.text,
       hoveredPointRingColor: theme.colors.text,
       linkDefaultColor: theme.colors.textMuted,
+      linkDefaultWidth: GRAPH_CONFIG.linkDefaultWidth,
+      linkOpacity: hasSelectedNode ? 1 : GRAPH_CONFIG.linkOpacity,
       outlinedPointRingColor: theme.colors.accentText,
       pointDefaultColor: theme.colors.accent,
     });
-  }, [rendererAvailable, theme]);
+  }, [hasSelectedNode, rendererAvailable, theme]);
 
   useEffect(() => {
     const graph = graphRef.current;
@@ -210,6 +252,7 @@ function applyGraphData(
   graph.setPointSizes(data.pointSizes);
   graph.setLinks(data.links);
   graph.setLinkColors(data.linkColors);
+  graph.setLinkStyles(data.linkStyles);
   graph.setLinkWidths(data.linkWidths);
   graph.setLinkArrows(data.linkArrows);
 
@@ -227,12 +270,15 @@ function applySelection(
     selectedIndex === undefined || !data
       ? undefined
       : findConnectedLinkIndices(data.links, selectedIndex);
+  const connectedPointIndices =
+    selectedIndex === undefined || !data
+      ? undefined
+      : findConnectedPointIndices(data.links, selectedIndex);
 
   graph.setConfigPartial({
     focusedPointIndex: selectedIndex,
     highlightedLinkIndices: connectedLinkIndices,
-    highlightedPointIndices:
-      selectedIndex === undefined ? undefined : [selectedIndex],
+    highlightedPointIndices: connectedPointIndices,
     outlinedPointIndices:
       selectedIndex === undefined ? undefined : [selectedIndex],
   });

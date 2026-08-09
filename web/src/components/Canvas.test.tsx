@@ -24,7 +24,12 @@ describe("Canvas", () => {
   it("passes snapshot relationships into the reusable graph", () => {
     const markup = renderToStaticMarkup(
       <ThemeProvider theme={darkTheme}>
-        <Canvas connection="live" edges={[]} nodes={[node("src/app.ts")]} />
+        <Canvas
+          connection="live"
+          edges={[]}
+          nodes={[node("src/app.ts")]}
+          selectedFileId="src/app.ts"
+        />
       </ThemeProvider>,
     );
 
@@ -34,6 +39,14 @@ describe("Canvas", () => {
     expect(markup).toContain('id="project-dependency-graph"');
     expect(markup).toContain("Rendering graph");
     expect(markup).toContain("Fit view");
+    expect(markup).toContain('aria-label="File state legend"');
+    expect(markup).toContain("Changed");
+    expect(markup).toContain("Direct impact");
+    expect(markup).toContain("Transitive impact");
+    expect(markup).toContain("Unchanged");
+    expect(markup).toContain("Selected edges");
+    expect(markup).toContain("Imports");
+    expect(markup).toContain("Imported by");
   });
 });
 

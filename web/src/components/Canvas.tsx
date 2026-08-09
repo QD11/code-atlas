@@ -1,11 +1,16 @@
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import type {
   ProjectSnapshotEdge,
   ProjectSnapshotNode,
 } from "@shared/project-snapshot.js";
-import styled, { keyframes } from "styled-components";
+import styled, { keyframes, useTheme } from "styled-components";
 import { tokens } from "~/app/theme";
 import { Graph, type GraphHandle } from "~/components/Graph";
+import {
+  FILE_STATE_LEGEND,
+  fileState,
+  fileStateGraphColor,
+} from "~/components/fileState";
 import { Button } from "~/components/ui/Button";
 
 interface CanvasProps {
@@ -25,9 +30,17 @@ export function Canvas({
   onFileSelect,
   selectedFileId,
 }: CanvasProps) {
+  const theme = useTheme();
   const graphRef = useRef<GraphHandle>(null);
   const isLoading = connection === "connecting" && nodes.length === 0;
   const hasSnapshot = nodes.length > 0;
+  const nodeColors = useMemo(
+    () =>
+      nodes.map((node) =>
+        fileStateGraphColor(fileState(node), theme.colors.fileState),
+      ),
+    [nodes, theme.colors.fileState],
+  );
 
   return (
     <Surface aria-label="Project graph canvas">
@@ -54,18 +67,57 @@ export function Canvas({
       </Toolbar>
 
       {hasSnapshot ? (
-        <Graph
-          edges={edges}
-          id="project-dependency-graph"
-          label={`Project dependency graph with ${nodes.length} ${
-            nodes.length === 1 ? "file" : "files"
-          } and ${edges.length} ${edges.length === 1 ? "import" : "imports"}`}
-          nodes={nodes}
-          onNodeSelect={onFileSelect}
-          ref={graphRef}
-          selectedNodeId={selectedFileId}
-          simulationEnabled
-        />
+        <>
+          <Graph
+            edges={edges}
+            id="project-dependency-graph"
+            label={`Project dependency graph with ${nodes.length} ${
+              nodes.length === 1 ? "file" : "files"
+            } and ${edges.length} ${edges.length === 1 ? "import" : "imports"}`}
+            nodeColors={nodeColors}
+            nodes={nodes}
+            onNodeSelect={onFileSelect}
+            ref={graphRef}
+            selectedNodeId={selectedFileId}
+            simulationEnabled
+          />
+          <FileStateLegend aria-label="File state legend">
+            <LegendTitle>File state</LegendTitle>
+            <LegendList>
+              {FILE_STATE_LEGEND.map(({ label, state }) => (
+                <LegendItem key={state}>
+                  <LegendSwatch
+                    $color={theme.colors.fileState[state]}
+                    aria-hidden="true"
+                  />
+                  {label}
+                </LegendItem>
+              ))}
+            </LegendList>
+            {selectedFileId ? (
+              <RelationshipLegend>
+                <LegendTitle>Selected edges</LegendTitle>
+                <LegendList>
+                  <LegendItem>
+                    <LegendLine
+                      $color={theme.colors.relationship.selected}
+                      aria-hidden="true"
+                    />
+                    Imports
+                  </LegendItem>
+                  <LegendItem>
+                    <LegendLine
+                      $color={theme.colors.relationship.selected}
+                      $dashed
+                      aria-hidden="true"
+                    />
+                    Imported by
+                  </LegendItem>
+                </LegendList>
+              </RelationshipLegend>
+            ) : null}
+          </FileStateLegend>
+        </>
       ) : (
         <Status aria-busy={isLoading} aria-live="polite" role="status">
           {isLoading ? <LoadingSpinner aria-hidden="true" /> : null}
@@ -148,6 +200,70 @@ const Connection = styled.span<{
   color: ${({ $connection }) =>
     $connection === "error" ? tokens.colors.accent : tokens.colors.textMuted};
   font-size: ${tokens.typography.size.xs};
+`;
+
+const FileStateLegend = styled.aside`
+  position: absolute;
+  z-index: 2;
+  bottom: 10px;
+  left: 10px;
+  min-width: 8rem;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid ${tokens.colors.border};
+  border-radius: 8px;
+  background: color-mix(in srgb, ${tokens.colors.surface} 88%, transparent);
+  backdrop-filter: blur(12px);
+`;
+
+const LegendTitle = styled.div`
+  margin-bottom: 0.5rem;
+  color: ${tokens.colors.textMuted};
+  font-size: ${tokens.typography.size.xs};
+  font-weight: ${tokens.typography.weight.semibold};
+  letter-spacing: ${tokens.typography.letterSpacing.wide};
+  text-transform: uppercase;
+`;
+
+const LegendList = styled.ul`
+  display: grid;
+  gap: 0.375rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+`;
+
+const LegendItem = styled.li`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: ${tokens.colors.text};
+  font-size: ${tokens.typography.size.xs};
+`;
+
+const LegendSwatch = styled.span<{ $color: string }>`
+  width: 0.625rem;
+  height: 0.625rem;
+  flex: none;
+  border-radius: 50%;
+  background: ${({ $color }) => $color};
+`;
+
+const RelationshipLegend = styled.div`
+  margin-top: 0.625rem;
+  padding-top: 0.625rem;
+  border-top: 1px solid ${tokens.colors.border};
+
+  ${LegendTitle} {
+    margin-bottom: 0.5rem;
+  }
+`;
+
+const LegendLine = styled.span<{ $color: string; $dashed?: boolean }>`
+  width: 1rem;
+  height: 0;
+  flex: none;
+  border-top: 3px ${({ $dashed }) => ($dashed ? "dashed" : "solid")}
+    ${({ $color }) => $color};
 `;
 
 const Status = styled.div`
