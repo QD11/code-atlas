@@ -1,7 +1,8 @@
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { Heading, Section } from "../web/src/components/ui";
+import { Heading } from "../web/src/components/ui/Heading";
+import { Section } from "../web/src/components/ui/Section";
 
 describe("Section", () => {
   it("increments heading levels as sections are nested", () => {

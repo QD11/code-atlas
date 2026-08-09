@@ -6,7 +6,7 @@ import type {
 import styled, { keyframes } from "styled-components";
 import { tokens } from "~/app/theme";
 import { Graph, type GraphHandle } from "~/components/Graph";
-import { Button } from "~/components/ui";
+import { Button } from "~/components/ui/Button";
 
 interface CanvasProps {
   connection: "connecting" | "live" | "error";

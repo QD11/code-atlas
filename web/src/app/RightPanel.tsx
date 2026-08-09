@@ -5,7 +5,10 @@ import type {
 } from "@shared/project-snapshot.js";
 import styled from "styled-components";
 import { tokens } from "~/app/theme";
-import { Button, Heading, Section, Tag } from "~/components/ui";
+import { Button } from "~/components/ui/Button";
+import { Heading } from "~/components/ui/Heading";
+import { Section } from "~/components/ui/Section";
+import { Tag } from "~/components/ui/Tag";
 
 const DEFAULT_WIDTH_PERCENT = 24;
 const COLLAPSED_WIDTH = "2.25rem";
