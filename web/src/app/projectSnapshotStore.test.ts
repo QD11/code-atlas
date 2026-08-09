@@ -57,9 +57,12 @@ describe("ProjectSnapshotStore", () => {
   });
 
   it("reports initial loading failures without inventing snapshot data", async () => {
-    const events = eventTransport(async () => {
-      throw new Error("Analyzer unavailable");
-    });
+    const recovered = snapshotState(4);
+    const load = vi
+      .fn<ProjectSnapshotTransport["load"]>()
+      .mockRejectedValueOnce(new Error("Analyzer unavailable"))
+      .mockResolvedValueOnce(recovered);
+    const events = eventTransport(load);
     const store = new ProjectSnapshotStore(events.transport);
 
     const unsubscribe = store.subscribe(() => undefined);
@@ -70,6 +73,15 @@ describe("ProjectSnapshotStore", () => {
       message: "Analyzer unavailable",
     });
 
+    events.emitReady();
+    await settle();
+
+    expect(load).toHaveBeenCalledTimes(2);
+    expect(store.getSnapshot()).toEqual({
+      connection: "live",
+      data: recovered,
+    });
+
     unsubscribe();
   });
 });
@@ -77,6 +89,7 @@ describe("ProjectSnapshotStore", () => {
 function eventTransport(load: ProjectSnapshotTransport["load"]): {
   close: ReturnType<typeof vi.fn>;
   emitError: (message: string) => void;
+  emitReady: () => void;
   emitSnapshot: () => void;
   transport: ProjectSnapshotTransport;
 } {
@@ -88,6 +101,9 @@ function eventTransport(load: ProjectSnapshotTransport["load"]): {
     close,
     emitError(message) {
       handlers?.onError(message);
+    },
+    emitReady() {
+      handlers?.onReady();
     },
     emitSnapshot() {
       handlers?.onSnapshot();
