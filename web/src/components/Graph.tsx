@@ -14,6 +14,7 @@ import styled, { useTheme } from "styled-components";
 import { tokens } from "~/app/theme";
 import {
   buildCosmosGraphData,
+  findConnectedLinkIndices,
   type CosmosGraphData,
   type GraphEdge,
   type GraphNode,
@@ -38,28 +39,31 @@ export interface GraphProps {
 
 type RendererStatus = "loading" | "ready" | "error";
 
+const SIMULATION_START_ALPHA = 0.4;
+
 const GRAPH_CONFIG: CosmosGraphConfig = {
   attribution: "cosmos.gl",
-  curvedLinks: true,
+  curvedLinks: false,
   enableDrag: true,
   enableSimulation: false,
   hoveredPointCursor: "pointer",
+  linkArrowsSizeScale: 0.7,
   linkDefaultArrows: true,
-  linkDefaultWidth: 3,
-  linkOpacity: 0.55,
+  linkDefaultWidth: 1,
+  linkGreyoutOpacity: 0.06,
+  linkOpacity: 0.32,
   pointDefaultSize: 16,
   pointGreyoutOpacity: 0.35,
   pointSizeScale: 1,
   randomSeed: "code-atlas",
   renderHoveredPointRing: true,
-  simulationCollision: 1,
-  simulationCollisionPadding: 2,
-  simulationFriction: 0.6,
-  simulationGravity: 0.12,
-  simulationLinkDistance: 20,
-  simulationLinkSpring: 0.8,
-  simulationRepulsion: 0.7,
-  curvedLinkControlPointDistance: 1,
+  simulationCollision: 0.35,
+  simulationCollisionPadding: 3,
+  simulationFriction: 0.4,
+  simulationGravity: 0.04,
+  simulationLinkDistance: 48,
+  simulationLinkSpring: 0.2,
+  simulationRepulsion: 0.65,
 };
 
 export function Graph({
@@ -139,7 +143,7 @@ export function Graph({
 
     graph.setConfigPartial({ enableSimulation: simulationEnabled });
     if (simulationEnabled && graphData.pointPositions.length > 0) {
-      graph.start(0.8);
+      graph.start(SIMULATION_START_ALPHA);
     }
   }, [graphData, rendererAvailable, simulationEnabled]);
 
@@ -219,9 +223,14 @@ function applySelection(
 ): void {
   const selectedIndex =
     selectedNodeId && data ? data.nodeIndices.get(selectedNodeId) : undefined;
+  const connectedLinkIndices =
+    selectedIndex === undefined || !data
+      ? undefined
+      : findConnectedLinkIndices(data.links, selectedIndex);
 
   graph.setConfigPartial({
     focusedPointIndex: selectedIndex,
+    highlightedLinkIndices: connectedLinkIndices,
     highlightedPointIndices:
       selectedIndex === undefined ? undefined : [selectedIndex],
     outlinedPointIndices:

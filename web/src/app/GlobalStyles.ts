@@ -20,7 +20,7 @@ export const GlobalStyles = createGlobalStyle`
   body,
   #root {
     width: 100%;
-    min-width: 800px;
+    min-width: 20rem;
     height: 100%;
     margin: 0;
   }

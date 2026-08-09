@@ -7,11 +7,11 @@ import styled from "styled-components";
 import { tokens } from "~/app/theme";
 import { Button, Heading, Section, Tag } from "~/components/ui";
 
-const DEFAULT_WIDTH = 300;
-const COLLAPSED_WIDTH = 36;
-const MIN_WIDTH = 240;
-const MAX_WIDTH = 560;
-const KEYBOARD_STEP = 16;
+const DEFAULT_WIDTH_PERCENT = 24;
+const COLLAPSED_WIDTH = "2.25rem";
+const MIN_WIDTH_PERCENT = 16;
+const MAX_WIDTH_PERCENT = 45;
+const KEYBOARD_STEP_PERCENT = 2;
 
 interface RightPanelProps {
   edges: readonly ProjectSnapshotEdge[];
@@ -28,7 +28,7 @@ export function RightPanel({
   onOpenChange,
   selectedFile,
 }: RightPanelProps) {
-  const [width, setWidth] = useState(DEFAULT_WIDTH);
+  const [widthPercent, setWidthPercent] = useState(DEFAULT_WIDTH_PERCENT);
   const [isResizing, setIsResizing] = useState(false);
   const importedRelationships = selectedFile
     ? fileRelationships(selectedFile.id, "imports", edges, nodes)
@@ -38,7 +38,10 @@ export function RightPanel({
     : [];
 
   function resizeFromPointer(clientX: number) {
-    setWidth(clampWidth(window.innerWidth - clientX));
+    const nextWidthPercent =
+      ((window.innerWidth - clientX) / window.innerWidth) * 100;
+
+    setWidthPercent(clampWidthPercent(nextWidthPercent));
   }
 
   function handlePointerDown(event: PointerEvent<HTMLDivElement>) {
@@ -62,23 +65,24 @@ export function RightPanel({
 
   function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
     const nextWidth = {
-      ArrowLeft: width + KEYBOARD_STEP,
-      ArrowRight: width - KEYBOARD_STEP,
-      Home: MIN_WIDTH,
-      End: MAX_WIDTH,
+      ArrowLeft: widthPercent + KEYBOARD_STEP_PERCENT,
+      ArrowRight: widthPercent - KEYBOARD_STEP_PERCENT,
+      Home: MIN_WIDTH_PERCENT,
+      End: MAX_WIDTH_PERCENT,
     }[event.key];
 
     if (nextWidth === undefined) return;
 
     event.preventDefault();
-    setWidth(clampWidth(nextWidth));
+    setWidthPercent(clampWidthPercent(nextWidth));
   }
 
   return (
     <Panel
+      $isOpen={isOpen}
       $isResizing={isResizing}
+      $widthPercent={widthPercent}
       aria-label="Details panel"
-      style={{ width: isOpen ? width : COLLAPSED_WIDTH }}
     >
       {isOpen ? (
         <>
@@ -86,10 +90,10 @@ export function RightPanel({
             $isResizing={isResizing}
             aria-label="Resize details panel"
             aria-orientation="vertical"
-            aria-valuemax={MAX_WIDTH}
-            aria-valuemin={MIN_WIDTH}
-            aria-valuenow={width}
-            aria-valuetext={`${width} pixels wide`}
+            aria-valuemax={MAX_WIDTH_PERCENT}
+            aria-valuemin={MIN_WIDTH_PERCENT}
+            aria-valuenow={Math.round(widthPercent)}
+            aria-valuetext={`${Math.round(widthPercent)} percent of the viewport`}
             onKeyDown={handleKeyDown}
             onLostPointerCapture={() => setIsResizing(false)}
             onPointerCancel={() => setIsResizing(false)}
@@ -145,8 +149,8 @@ export function RightPanel({
   );
 }
 
-function clampWidth(width: number): number {
-  return Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, width));
+function clampWidthPercent(widthPercent: number): number {
+  return Math.min(MAX_WIDTH_PERCENT, Math.max(MIN_WIDTH_PERCENT, widthPercent));
 }
 
 interface FileRelationship {
@@ -284,18 +288,22 @@ function RelationshipList({
   }
 
   return (
-    <DetailList>
+    <ScrollableRelationshipList>
       {relationships.map(({ file, importedSymbols }) => (
         <DetailItem key={file.id}>
           <ItemName>{file.path}</ItemName>
-          <RelationshipMeta>
-            {importedSymbols.length > 0
-              ? `Imports: ${importedSymbols.join(", ")}`
-              : "Imports module"}
-          </RelationshipMeta>
+          <ImportedSymbolList aria-label="Imported symbols">
+            {importedSymbols.length > 0 ? (
+              importedSymbols.map((symbol) => (
+                <ImportedSymbol key={symbol}>{symbol}</ImportedSymbol>
+              ))
+            ) : (
+              <ImportedSymbol>Module import</ImportedSymbol>
+            )}
+          </ImportedSymbolList>
         </DetailItem>
       ))}
-    </DetailList>
+    </ScrollableRelationshipList>
   );
 }
 
@@ -306,8 +314,14 @@ function formatLabel(value: string): string {
     .join(" ");
 }
 
-const Panel = styled.aside<{ $isResizing: boolean }>`
+const Panel = styled.aside<{
+  $isOpen: boolean;
+  $isResizing: boolean;
+  $widthPercent: number;
+}>`
   position: relative;
+  width: ${({ $isOpen, $widthPercent }) =>
+    $isOpen ? `clamp(12rem, ${$widthPercent}vw, 35rem)` : COLLAPSED_WIDTH};
   min-width: 0;
   min-height: 0;
   display: flex;
@@ -321,6 +335,13 @@ const Panel = styled.aside<{ $isResizing: boolean }>`
 
   @media (prefers-reduced-motion: reduce) {
     transition: none;
+  }
+
+  @media (max-width: 40rem) {
+    width: ${({ $isOpen, $widthPercent }) =>
+      $isOpen
+        ? `clamp(min(10rem, 45vw), ${$widthPercent}vw, 45vw)`
+        : COLLAPSED_WIDTH};
   }
 `;
 
@@ -485,6 +506,13 @@ const DetailList = styled.ul`
   list-style: none;
 `;
 
+const ScrollableRelationshipList = styled(DetailList)`
+  max-height: 11rem;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+  scrollbar-gutter: stable;
+`;
+
 const DetailItem = styled.li`
   min-width: 0;
 `;
@@ -513,7 +541,19 @@ const ItemMeta = styled.div`
   line-height: ${tokens.typography.lineHeight.normal};
 `;
 
-const RelationshipMeta = styled(ItemMeta)`
+const ImportedSymbolList = styled.ul`
+  display: grid;
+  gap: 0.25rem;
+  margin: 0.375rem 0 0;
+  padding: 0;
+  list-style: none;
+`;
+
+const ImportedSymbol = styled.li`
+  padding: 0.25rem 0.5rem;
+  border-left: 1px solid ${tokens.colors.border};
+  color: ${tokens.colors.textMuted};
+  font-family: ${tokens.typography.family.mono};
   font-size: ${tokens.typography.size.sm};
 `;
 

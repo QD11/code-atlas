@@ -26,9 +26,10 @@ describe("RightPanel", () => {
     expect(markup).toContain('aria-label="Resize details panel"');
     expect(markup).toContain('role="separator"');
     expect(markup).toContain('aria-orientation="vertical"');
-    expect(markup).toContain('aria-valuemin="240"');
-    expect(markup).toContain('aria-valuemax="560"');
-    expect(markup).toContain('aria-valuenow="300"');
+    expect(markup).toContain('aria-valuemin="16"');
+    expect(markup).toContain('aria-valuemax="45"');
+    expect(markup).toContain('aria-valuenow="24"');
+    expect(markup).toContain("24 percent of the viewport");
     expect(markup).toContain('aria-label="Hide details panel"');
     expect(markup).toContain('aria-expanded="true"');
     expect(markup).toContain("Details");
@@ -66,8 +67,10 @@ describe("RightPanel", () => {
     expect(markup).toContain("createApp");
     expect(markup.match(/src\/theme\.ts/g)).toHaveLength(1);
     expect(markup.match(/src\/main\.ts/g)).toHaveLength(1);
-    expect(markup).toContain("Imports: tokens");
-    expect(markup).toContain("Imports: createApp");
+    expect(markup.match(/aria-label="Imported symbols"/g)).toHaveLength(2);
+    expect(markup).toContain("tokens");
+    expect(markup).toContain("createApp");
+    expect(markup).not.toContain("Imports:");
     expect(markup).toContain("No change impact identified");
   });
 });

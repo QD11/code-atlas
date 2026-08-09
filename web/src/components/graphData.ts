@@ -95,3 +95,24 @@ export function buildCosmosGraphData(
     pointSizes,
   };
 }
+
+export function findConnectedLinkIndices(
+  links: Float32Array,
+  selectedNodeIndex: number,
+): number[] {
+  const connectedLinkIndices: number[] = [];
+
+  for (let linkIndex = 0; linkIndex < links.length / 2; linkIndex += 1) {
+    const sourceIndex = links[linkIndex * 2];
+    const targetIndex = links[linkIndex * 2 + 1];
+
+    if (
+      sourceIndex === selectedNodeIndex ||
+      targetIndex === selectedNodeIndex
+    ) {
+      connectedLinkIndices.push(linkIndex);
+    }
+  }
+
+  return connectedLinkIndices;
+}
