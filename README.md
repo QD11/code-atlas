@@ -2,6 +2,8 @@
 
 Visualize how exported-symbol changes affect a JavaScript or TypeScript project.
 
+![Code Atlas visualizing a project dependency graph and file details](docs/assets/code-atlas-preview.png)
+
 > Code Atlas is in early development. The first public preview reserves the
 > package and command name while the project graph and impact analyzer are
 > being built in public.
