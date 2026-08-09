@@ -31,7 +31,7 @@ describe("fileState", () => {
     ]);
     expect(
       fileStateGraphColor("unchanged", lightTheme.colors.fileState),
-    ).toEqual([111 / 255, 111 / 255, 111 / 255, 1]);
+    ).toEqual([83 / 255, 109 / 255, 229 / 255, 1]);
     expect(
       fileStateGraphColor("directImpact", darkTheme.colors.fileState),
     ).toEqual([241 / 255, 194 / 255, 27 / 255, 1]);
@@ -49,6 +49,16 @@ describe("fileState", () => {
           contrastRatio(composite(nodeColor, canvasColor), canvasColor),
         ).toBeGreaterThanOrEqual(3);
       }
+    }
+  });
+
+  it("gives every file state a distinct color in both themes", () => {
+    for (const theme of [darkTheme, lightTheme]) {
+      const stateColors = FILE_STATE_LEGEND.map(
+        ({ state }) => theme.colors.fileState[state],
+      );
+
+      expect(new Set(stateColors).size).toBe(FILE_STATE_LEGEND.length);
     }
   });
 });
